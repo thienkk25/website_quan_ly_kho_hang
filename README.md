@@ -1,8 +1,5 @@
 # website_quan_ly_kho_hang
 Nhóm 5
-<<<<<<< HEAD
-j
-=======
 
 ## Cơ sở dữ liệu
 1. Bảng quản lý tài khoản (admin)
@@ -62,4 +59,3 @@ j
     ngayXuat DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (idSP) REFERENCES SanPham(id) ON DELETE CASCADE
     );`
->>>>>>> thien
