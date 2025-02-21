@@ -51,6 +51,7 @@
                         <th>Số lượng</th>
                         <th>Giá Nhập</th>
                         <th>Ngày Nhập</th>
+                        <th>Tổng tiền</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,15 +63,20 @@
                 
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
+                            $soLuong = (int) ($row['soLuong']);
+                            $giaNhap = (float) ($row['giaNhap']);
+                            $tongTien = $soLuong*$giaNhap;
                             echo "<tr>
                                     <td>{$row['id']}</td>
                                     <td>{$row['tenSP']}</td>
                                     <td>{$row['tenNCC']}</td>
-                                    <td>{$row['soLuong']}</td>
-                                    <td>{$row['giaNhap']}</td>
+                                    <td>{$soLuong}</td>
+                                    <td>{$giaNhap}</td>
                                     <td>{$row['ngayNhap']}</td>
+                                    <td>{$tongTien}</td>
                                   </tr>";
-                        }
+                                }
+                                
                     } else {
                         echo "<tr>
                                     <td colspan='6'>Không có dữ liệu</td>
@@ -81,9 +87,11 @@
                 </tbody>
             </table>
             <div class="summary">
-                <p>Tổng số phiếu nhập: 0</p>
-                <p>Tổng tiền: 0</p>
-                <p>Tổng nợ: 0</p>
+                <p>Tổng số phiếu nhập: <?php echo $result->num_rows; ?></p>
+                <p>Tổng tiền: <?php 
+                                     echo $conn->query("SELECT SUM(soLuong * giaNhap) AS tongTien FROM nhapkho")->fetch_assoc()['tongTien'];
+                                    ?>
+                </p>
             </div>
         </main>
     </div>

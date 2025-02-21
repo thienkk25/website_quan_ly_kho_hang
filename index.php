@@ -23,7 +23,7 @@
             </ul>
         </aside>
         <main class="main-content">
-            <?php include "compoments\overview.php" ?>
+            <?php include "components\overview.php" ?>
         </main>
     </div>
     <script src="script.js"></script>
