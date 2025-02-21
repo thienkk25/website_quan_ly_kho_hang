@@ -1,3 +1,6 @@
+<?php include "connection.php"; ?>
+
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -35,7 +38,7 @@
                 <span>đến</span>
                 <input type="date">
                 <button>Tìm kiếm</button>
-                <a href="C:\xampp\htdocs\website_quan_ly_kho_hang\create_warehouse_receipt.html"
+                <a href="http://127.0.0.1/website_quan_ly_kho_hang/create_warehouse_receipt.php"
                     target="_blank"><button>Tạo
                         phiếu nhập</button></a>
             </div>
@@ -43,17 +46,38 @@
                 <thead>
                     <tr>
                         <th>Mã phiếu nhập</th>
-                        <th>Kho nhập</th>
-                        <th>Tình trạng</th>
-                        <th>Ngày nhập</th>
-                        <th>Người nhập</th>
-                        <th>Tổng tiền</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Tên nhà cung cấp</th>
+                        <th>Số lượng</th>
+                        <th>Giá Nhập</th>
+                        <th>Ngày Nhập</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td colspan="6">Không có dữ liệu</td>
-                    </tr>
+                    <?php
+                    $sql = "SELECT * FROM ((nhapkho 
+                    INNER JOIN sanpham ON nhapkho.idSP = sanpham.id) 
+                    INNER JOIN nhacungcap ON nhacungcap.id = nhapkho.idNCC)";
+                    $result = $conn->query($sql);
+                
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
+                                    <td>{$row['id']}</td>
+                                    <td>{$row['tenSP']}</td>
+                                    <td>{$row['tenNCC']}</td>
+                                    <td>{$row['soLuong']}</td>
+                                    <td>{$row['giaNhap']}</td>
+                                    <td>{$row['ngayNhap']}</td>
+                                  </tr>";
+                        }
+                    } else {
+                        echo "<tr>
+                                    <td colspan='6'>Không có dữ liệu</td>
+                                <tr>
+                                    ";
+                    }
+                    ?>
                 </tbody>
             </table>
             <div class="summary">
