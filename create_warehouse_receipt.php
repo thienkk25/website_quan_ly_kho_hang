@@ -35,15 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <aside class="sidebar">
-            <h2>TỔNG QUAN</h2>
+        <h2><a style="text-decoration: none;color: white;display: block;" href="http://127.0.0.1/website_quan_ly_kho_hang/">TỔNG QUAN</a></h2>
             <ul>
-                <li>Sản phẩm</li>
-                <li>Nhập kho</li>
-                <li>Xuất kho</li>
-                <li>Tồn kho</li>
-                <li>Khách hàng</li>
-                <li>Lợi nhuận</li>
-                <li>Thiết lập</li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Sản phẩm</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="http://127.0.0.1/website_quan_ly_kho_hang/warehouse_import.php">Nhập kho</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Xuất kho</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Tồn kho</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Khách hàng</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Lợi nhuận</a></li>
+                <li><a style="text-decoration: none;color: white;display: block;" href="#">Thiết lập</a></li>
             </ul>
         </aside>
         <main class="main-content">
