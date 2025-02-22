@@ -1,3 +1,1 @@
-# website_quan_ly_kho_hang
-Nhóm 5
-jj
+# website_quan_ly_kho_han
