@@ -53,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="info-section">
                 <div class="form-group">
                     <label>ID Sản phẩm</label>
-                    <input type="text" placeholder="Nhà cung cấp" name="idSP">
+                    <input type="text" placeholder="ID Sản phẩm" name="idSP">
                 </div>
                 <div class="form-group">
                     <label>ID Nhà cung cấp</label>
-                    <input type="text" placeholder="Nhà cung cấp" name="idNCC">
+                    <input type="text" placeholder="ID Nhà cung cấp" name="idNCC">
                 </div>
                 <div class="form-group">
                     <label for="soLuong">Số lượng</label>
@@ -81,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php
     
-// Đóng kết nối
 $conn->close();
 
 ?>
