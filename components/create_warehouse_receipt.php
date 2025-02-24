@@ -11,13 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt) {
         $stmt->bind_param("iiid", $idSP, $idNCC, $soLuong, $giaNhap);
         if ($stmt->execute()) {
-            echo "Thêm phiếu nhập kho thành công!";
+            echo "<script>alert('Thêm phiếu nhập kho thành công!')</script>";
         } else {
-            echo "Lỗi: " . $stmt->error;
+            echo "<script>alert('Lỗi: ".$stmt->error."')</script>";
         }
         $stmt->close();
     } else {
-        echo "Lỗi chuẩn bị truy vấn: " . $conn->error;
+        echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."')</script>";
     }
 }
 ?>
