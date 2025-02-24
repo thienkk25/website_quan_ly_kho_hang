@@ -5,7 +5,7 @@ include 'config.php';
 $search = "";
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM sanpham WHERE ten_sanpham LIKE '%$search%' OR ma_sanpham LIKE '%$search%'";
+    $sql = "SELECT * FROM sanpham WHERE tenSP LIKE '%$search%' OR id LIKE '%$search%'";
 } else {
     $sql = "SELECT * FROM sanpham";
 }
@@ -19,45 +19,65 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>Danh sách sản phẩm</h2>
-    <form method="GET" action="sanpham.php">
-        <input type="text" name="search" placeholder="Nhập mã hoặc tên sản phẩm" value="<?php echo $search; ?>">
-        <button type="submit">Tìm kiếm</button>
-    </form>
-
-    <table border="1">
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Mô tả sản phẩm</th>
-            <th>ID</th>
-            <th>Giá bán</th>
-
-        </tr>
-
-        <?php
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>
-                        <td>{$row['tenSP']}</td>
-                        <td>{$row['motaSP']}</td>
-                        <td>{$row['giaSP']}</td>
-                        <td>{$row['ID']}</td>
-                        <td>
-                            <a href='edit.php?id={$row['id']}'>Chỉnh sửa</a> |
-                            <a href='delete.php?id={$row['id']}' onclick='return confirm(\"Bạn có chắc muốn xóa không?\")'>Xóa</a>
-                        </td>
-                    </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='8'>Không có sản phẩm nào</td></tr>";
-        }
-        ?>
+<div class="container">
+        <aside class="sidebar">
+            <h2>TỔNG QUAN</h2>
+            <ul>
+                <li>Sản phẩm</li>
+                <li>Nhập kho</li>
+                <li>Xuất kho</li>
+                <li>Tồn kho</li>
+                <li>Khách hàng</li>
+                <li>Lợi nhuận</li>
+                <li>Thiết lập</li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header>
+            <h2>Danh sách sản phẩm</h2>
+                <form method="GET" action="sanpham.php">
+                    <input type="text" name="search" placeholder="Nhập mã hoặc tên sản phẩm" value="<?php echo $search; ?>">
+                    <button type="submit">Tìm kiếm</button>
+                    <a href="themsanpham.php"  name="add">Thêm sản phẩm</button></a>
+                </form>
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Mô tả sản phẩm</th>
+                        <th>Giá bán</th>
+                        <th>Ngày tạo</th>
+                    </tr>
+                </thead>
+        <?php while($row = mysqli_fetch_assoc($result)):    ?>
+                <tr>
+                    <td><?php echo $row['id'];  ?></td>
+                    <td><?php echo $row['tenSP'];  ?></td>
+                    <td><?php echo $row['motaSP'];  ?></td>
+                    <td><?php echo $row['giaSP'];  ?></td>
+                    <td><?php echo $row['created_at'];  ?></td>
+                    <td>
+                    <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete.php?delete=<?php echo $row['id']; ?>">
+                        <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                    </td>
+                    <td>
+                    <a href="edit.php?sid=<?php echo $row['id']; ?>">
+                        <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                    </a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
     </table>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="./js/app.js"></script>
 </body>
+        
 </html>
 
-<?php
-mysqli_close($conn);
-?>
