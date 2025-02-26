@@ -1,43 +1,48 @@
-<header>
-    <h1>Tạo sản phẩm sản phẩm</h1>
-    <div class="form-group">
-        <button type="submit">Lưu</button>
-        <button type="button">Trở về</button>
-    </div>
-</header>
-<h2>Thông tin cơ bản</h2>
-<form>
-    <div class="form-group">
-        <label for="productName">Tên sản phẩm:</label>
-        <input type="text" id="productName" placeholder="Nhập tên sản phẩm">
-    </div>
-    <div class="form-group">
-        <label for="quantity">Số lượng:</label>
-        <input type="number" id="quantity" value="0">
-    </div>
-    <div class="form-group">
-        <label for="costPrice">Giá vốn:</label>
-        <input type="text" id="costPrice" placeholder="Nhập giá vốn">
-    </div>
-    <div class="form-group">
-        <label for="salePrice">Giá bán:</label>
-        <input type="text" id="salePrice" value="0">
-    </div>
-    <div class="form-group">
-        <label for="category">Danh mục:</label>
-        <select id="category">
-            <option value="ao">Áo</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="productCode">Mã sản phẩm:</label>
-        <input type="text" id="productCode" placeholder="Nếu không nhập, hệ thống sẽ tự sinh.">
-    </div>
-    <div class="form-group">
-        <label for="producer">Nhà sản xuất:</label>
-        <select id="producer">
-            <option value="apple">apple</option>
-        </select>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <title>Thêm sản phẩm</title>
+</head>
+<body>
 
-</form>
+    <?php require_once '../connection.php' ?>
+    <?php
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $tenSP = $_POST['tenSP'];
+            $motaSP = $_POST['motaSP'];
+            $giaSP = $_POST['giaSP'];
+            if($conn -> query("INSERT INTO sanpham (tenSP,motaSP,giaSP) VALUES (N'$tenSP', N'$motaSP', N'$giaSP')")){
+                echo header('Location: product.php');
+            }else {
+                echo "<script>alert('Thêm sản phẩm thất bại!')</script>";
+            }
+        }$conn -> close();
+    ?>
+
+    <div class="container">
+    <h1 style="text-align: center;">Thêm sản phẩm</h1><br>
+            <div class="col-6" style="margin: auto; background-color: #e3f6fb; padding-bottom: 1px; border-radius: 10px;">
+                <form action="" method="POST">
+                    <div class="form-group">
+                        <label for="tenSP">Tên sản phẩm:</label>
+                        <input class="form-control" type="text" name="tenSP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="motaSP">Mô tả sản phẩm:</label>
+                        <input class="form-control" type="text" name="motaSP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="giaSP">Giá</label>
+                        <input class="form-control" type="number" name="giaSP" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" name="add">Thêm</button>
+                    </div>
+                </form>
+            </div>
+    </div>
+</body>
+</html>

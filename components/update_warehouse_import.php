@@ -1,4 +1,4 @@
-<?php include "connection.php"; ?>
+<?php include "../connection.php"; ?>
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'];
@@ -7,13 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $soLuong = $_POST['soLuong'];
     $giaNhap = $_POST['giaNhap'];
 
-    $sql = "UPDATE nhapkho SET idSP=?, idNCC=?, soLuong=?, giaNhap=? WHERE id=?";
+    $sql = "UPDATE nhapkho SET idSP=?, idNCC=?, soLuong=?, giaNhap=?, ngayNhap=NOW() WHERE id=?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
         $stmt->bind_param("iiidi", $idSP, $idNCC, $soLuong, $giaNhap, $id);
         if ($stmt->execute()) {
             echo "<script>alert('Cập nhật thành công!');</script>";
+            echo header('Location: warehouse_import.php');
         } else {
             echo "<script>alert('Lỗi cập nhật!');</script>";
         }
@@ -39,23 +40,14 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tổng quan</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Cập nhật phiếu nhập</title>
+    <link rel="stylesheet" href="../styles.css">
 </head>
 
 <body>
     <div class="container">
         <aside class="sidebar">
-        <h2><a style="text-decoration: none;color: white;display: block;" href="http://127.0.0.1/website_quan_ly_kho_hang/">TỔNG QUAN</a></h2>
-            <ul>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Sản phẩm</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="http://127.0.0.1/website_quan_ly_kho_hang/warehouse_import.php">Nhập kho</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Xuất kho</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Tồn kho</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Khách hàng</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Lợi nhuận</a></li>
-                <li><a style="text-decoration: none;color: white;display: block;" href="#">Thiết lập</a></li>
-            </ul>
+            <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
             <h1>Cập nhật phiếu nhập</h1>
