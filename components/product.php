@@ -72,7 +72,7 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo $row['id'];  ?></td>
                         <td><?php echo $row['tenSP'];  ?></td>
                         <td><?php echo $row['motaSP'];  ?></td>
-                        <td><?php echo number_format($row['giaSP'], 2, ',', '.')  ?>VND</td>
+                        <td><?php echo number_format($row['giaSP'], 2)  ?> VND</td>
                         <td><?php echo $row['created_at'];  ?></td>
                         <td>
                         <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">

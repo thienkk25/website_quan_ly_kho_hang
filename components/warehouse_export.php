@@ -109,10 +109,10 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                             echo "<tr>
                                     <td>{$row['id']}</td>
                                     <td>{$row['tenSP']}</td>
-                                    <td>".number_format($giaSP, 2, ',', '.')." VND</td>
+                                    <td>".number_format($giaSP, 2)." VND</td>
                                     <td>{$soLuong}</td>
                                     <td>{$row['ngayXuat']}</td>
-                                      <td>".number_format($tongTien, 2, ',', '.')." VND</td>
+                                      <td>".number_format($tongTien, 2)." VND</td>
                                   </tr>";
                                 }
                                 
@@ -147,7 +147,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                         }
 
                         $tongTienTK = $conn->query($sql_total)->fetch_assoc()['tongTienTK'] ?? 0;
-                        echo number_format($tongTienTK, 2, ',', '.') . " VND";
+                        echo number_format($tongTienTK, 2) . " VND";
                     ?>
                 </p>
             </div>

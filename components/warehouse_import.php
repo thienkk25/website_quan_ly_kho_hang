@@ -71,7 +71,6 @@
             <div class="search-bar">
                 <form method="GET" action="">
                     <input type="text" name="search" placeholder="Nhập mã phiếu nhập hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
-                    
                     <select>
                         <option>Phiếu nhập</option>
                     </select>
@@ -112,9 +111,9 @@
                                     <td>{$row['tenSP']}</td>
                                     <td>{$row['tenNCC']}</td>
                                     <td>{$soLuong}</td>
-                                    <td>".number_format($giaNhap, 2, ',', '.')." VND</td>
+                                    <td>".number_format($giaNhap, 2)." VND</td>
                                     <td>{$row['ngayNhap']}</td>
-                                    <td>".number_format($tongTien, 2, ',', '.')." VND</td>
+                                    <td>".number_format($tongTien, 2)." VND</td>
                                     <td>
                                         <form method='GET' action='update_warehouse_import.php'>
                                             <input type='hidden' name='id' value='{$row['id']}'>
@@ -163,7 +162,7 @@
                         }
 
                         $tongTienTK = $conn->query($sql_total)->fetch_assoc()['tongTienTK'] ?? 0;
-                        echo number_format($tongTienTK, 2, ',', '.') . " VND";
+                        echo number_format($tongTienTK, 2) . " VND";
                     ?>
                 </p>
             </div>

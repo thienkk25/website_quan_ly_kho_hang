@@ -1,16 +1,46 @@
 <?php
 include '../connection.php';
 
-// Xử lý tìm kiếm
-$search = "";
-if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-    $sql = "SELECT * FROM sanpham WHERE tenSP LIKE '%$search%' OR id LIKE '%$search%'";
-} else {
-    $sql = "SELECT * FROM sanpham";
-}
+// Lấy dữ liệu tổng hợp
+$sql_summary = "
+    SELECT 
+        SUM(soLuongTon) AS tongSLTon, 
+        SUM(tongVonTonKho) AS tongVonTonKho, 
+        SUM(tongGiaTriTonKho) AS tongGiaTriTonKho
+    FROM (
+        SELECT 
+            sp.id, 
+            sp.tenSP, 
+            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon,
+            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * 
+            (COALESCE(SUM(nk.giaNhap * nk.soLuong) / NULLIF(SUM(nk.soLuong), 0), 0)) AS tongVonTonKho,
+            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * sp.giaSP AS tongGiaTriTonKho
+        FROM sanpham sp
+        LEFT JOIN nhapkho nk ON sp.id = nk.idSP
+        LEFT JOIN xuatkho xk ON sp.id = xk.idSP
+        GROUP BY sp.id, sp.tenSP, sp.giaSP
+    ) AS subquery;
+";
+$result_summary = $conn->query($sql_summary);
+$summary = $result_summary->fetch_assoc();
 
-$result = mysqli_query($conn, $sql);
+// Lấy danh sách sản phẩm (có tìm kiếm)
+$search = isset($_GET['search']) ? $_GET['search'] : "";
+$sql_products = "
+    SELECT 
+        sp.id AS maSP, 
+        sp.tenSP, 
+        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon,
+        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * 
+        (COALESCE(SUM(nk.giaNhap * nk.soLuong) / NULLIF(SUM(nk.soLuong), 0), 0)) AS vonTonKho,
+        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * sp.giaSP AS giaTriTonKho
+    FROM sanpham sp
+    LEFT JOIN nhapkho nk ON sp.id = nk.idSP
+    LEFT JOIN xuatkho xk ON sp.id = xk.idSP
+    WHERE sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%'
+    GROUP BY sp.id, sp.tenSP, sp.giaSP;
+";
+$result_products = $conn->query($sql_products);
 ?>
 
 <!DOCTYPE html>
@@ -20,6 +50,137 @@ $result = mysqli_query($conn, $sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sản phẩm</title>
     <link rel="stylesheet" href="../styles.css">
+     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #292b2c;
+            color: #fff;
+            padding: 15px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .header button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .header button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Thiết kế phần summary */
+        #summary {
+            display: flex;
+            gap: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        #box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 25px;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 170px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
+
+        #box:nth-child(1) {
+            background: #e3f2c1;
+            color: #6b8e23;
+        }
+
+        #box:nth-child(2) {
+            background: #e3f2fd;
+            color: #1e88e5;
+        }
+
+        #box:nth-child(3) {
+            background: #ffe0b2;
+            color: #f57c00;
+        }
+
+        #box:nth-child(4) {
+            background: #ffcdd2;
+            color: #d32f2f;
+        }
+
+        h3 {
+            margin: 5px 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+     </style>
 </head>
 <body>
 <div class="container">
@@ -28,51 +189,55 @@ $result = mysqli_query($conn, $sql);
         </aside>
         <main class="main-content">
             <div class="header">
-                <input type="text" placeholder="Nhập tên hoặc mã sản phẩm để tìm kiếm">
-                <div class="date-info">19/05/2022 Ngày lập</div>
-                <div class="stock-info">SL tồn kho: 39</div>
-                <div class="total-value">Tổng vốn tồn kho: 6,520,000</div>
-                <button class="view-button">Xem</button>
+                <h2>Quản lý kho</h2>
+                <form method="GET" action="">
+                    <input type="text" name="search" placeholder="Nhập mã sản phẩm hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
+                    <button type="submit">Tìm kiếm</button>
+                </form>
+            </div>
+            <div id="summary">
+                <div id="box">
+                    <p>Ngày hôm nay</p>
+                    <h3>
+                        <?php 
+                        date_default_timezone_set('Asia/Ho_Chi_Minh');
+                        echo date("d-m-Y"); 
+                        ?>
+                    </h3>
+                </div>
+                <div id="box">
+                    <p>Tổng số lượng tồn kho</p>
+                    <h3><?= number_format($summary['tongSLTon']) ?></h3>
+                </div>
+                <div id="box">
+                    <p>Tổng vốn tồn kho</p>
+                    <h3><?= number_format($summary['tongVonTonKho'], 2) ?> VND</h3>
+                </div>
+                <div id="box">
+                    <p>Tổng giá trị tồn</p>
+                    <h3><?= number_format($summary['tongGiaTriTonKho'], 2) ?> VND</h3>
+                </div>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Ma hàng</th>
+                        <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
-                        <th>SL</th>
+                        <th>Số lượng</th>
                         <th>Vốn tồn kho</th>
                         <th>Giá trị tồn</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>SP00004</td>
-                        <td>Đồng phục nam</td>
-                        <td>14</td>
-                        <td>3,500,000</td>
-                        <td>3,500,000</td>
-                    </tr>
-                    <tr>
-                        <td>SP00001</td>
-                        <td>Quần nam</td>
-                        <td>13</td>
-                        <td>1,820,000</td>
-                        <td>1,820,000</td>
-                    </tr>
-                    <tr>
-                        <td>SP00003</td>
-                        <td>Bệt ngọt</td>
-                        <td>8</td>
-                        <td>600,000</td>
-                        <td>600,000</td>
-                    </tr>
-                    <tr>
-                        <td>SP00002</td>
-                        <td>Áo nữ</td>
-                        <td>4</td>
-                        <td>600,000</td>
-                        <td>600,000</td>
-                    </tr>
+                    <?php while ($row = $result_products->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= $row['maSP'] ?></td>
+                            <td><?= $row['tenSP'] ?></td>
+                            <td><?= number_format($row['soLuongTon']) ?></td>
+                            <td><?= number_format($row['vonTonKho'], 2) ?> VND</td>
+                            <td><?= number_format($row['giaTriTonKho'], 2) ?> VND</td>
+                        </tr>
+                    <?php endwhile; ?>
                 </tbody>
             </table>
         </main>
