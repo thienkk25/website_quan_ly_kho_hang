@@ -4,23 +4,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idSP = $_POST['idSP'];
     $soLuong = $_POST['soLuong'];
 
-    $sql = "INSERT INTO xuatkho (idSP, soLuong) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param("ii", $idSP, $soLuong);
-        if ($stmt->execute()) {
-            echo '<script language="javascript">';
-            echo 'alert("Xuất phiếu kho thành công!")';
-            echo '</script>';
+    // Truy vấn số lượng tồn kho hiện tại
+    $sql_check = "
+        SELECT (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon
+        FROM SanPham sp
+        LEFT JOIN NhapKho nk ON sp.id = nk.idSP
+        LEFT JOIN XuatKho xk ON sp.id = xk.idSP
+        WHERE sp.id = ?
+        GROUP BY sp.id;
+    ";
+    
+    $stmt_check = $conn->prepare($sql_check);
+    if ($stmt_check) {
+        $stmt_check->bind_param("i", $idSP);
+        $stmt_check->execute();
+        $result = $stmt_check->get_result();
+        $row = $result->fetch_assoc();
+        $soLuongTon = $row['soLuongTon'] ?? 0; // Nếu không có, mặc định là 0
+        $stmt_check->close();
+
+        // Kiểm tra số lượng xuất có hợp lệ không
+        if ($soLuong > $soLuongTon) {
+            echo '<script>alert("Lỗi: Số lượng xuất vượt quá số lượng tồn kho!");</script>';
         } else {
-            echo "Lỗi: " . $stmt->error;
+            // Nếu hợp lệ, thực hiện xuất kho
+            $sql = "INSERT INTO XuatKho (idSP, soLuong) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            if ($stmt) {
+                $stmt->bind_param("ii", $idSP, $soLuong);
+                if ($stmt->execute()) {
+                    echo '<script>alert("Xuất phiếu kho thành công!");</script>';
+                } else {
+                    echo "Lỗi: " . $stmt->error;
+                }
+                $stmt->close();
+            } else {
+                echo "Lỗi chuẩn bị truy vấn: " . $conn->error;
+            }
         }
-        $stmt->close();
     } else {
-        echo "Lỗi chuẩn bị truy vấn: " . $conn->error;
+        echo "Lỗi khi kiểm tra tồn kho: " . $conn->error;
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -43,8 +70,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="" method="post">
             <div class="info-section">
                 <div class="form-group">
-                    <label>ID Sản phẩm</label>
-                    <input type="text" placeholder="ID Sản phẩm" name="idSP">
+                    <label>Sản phẩm</label>
+                    <?php 
+                             $sqlSP = "SELECT * FROM sanpham";
+                             $resultSP = $conn->query($sqlSP);
+                             if ($resultSP->num_rows > 0) { ?>
+                                <select name="idSP">
+                                    <?php 
+                                        while ($row = $resultSP->fetch_assoc()) {
+                                            echo "<option value=".$row['id'].">".$row['tenSP']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                             <?php
+                             }
+                             else {
+                                echo "Không có dữ liệu";
+                             }
+                         ?>
                 </div>
                 <div class="form-group">
                     <label for="soLuong">Số lượng</label>
@@ -53,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="buttons">
-                <button type="submit">Tạo</button>
+                <button type="submit">Xuất</button>
             </div>
             </form>
         </main>
