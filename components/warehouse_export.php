@@ -36,6 +36,28 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ xuất kho</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 
 <body>
