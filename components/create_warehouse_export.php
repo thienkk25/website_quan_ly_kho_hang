@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_check->execute();
         $result = $stmt_check->get_result();
         $row = $result->fetch_assoc();
-        $soLuongTon = $row['soLuongTon'] ?? 0; // Nếu không có, mặc định là 0
+        $soLuongTon = $row['soLuongTon']; // Nếu không có, mặc định là 0
         $stmt_check->close();
 
         // Kiểm tra số lượng xuất có hợp lệ không
