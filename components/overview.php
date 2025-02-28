@@ -11,7 +11,6 @@
     FROM hangtonkho htk
     LEFT JOIN sanpham sp ON htk.idSP = sp.id
     LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP
-    GROUP BY htk.idSP;
     ";
 
     $result_summary = $conn->query($sql_summary);
