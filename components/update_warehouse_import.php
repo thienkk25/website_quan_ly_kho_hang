@@ -71,7 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."');</script>";
     }
 }
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = $_GET['id'];
+    $sql = "SELECT * FROM nhapkho WHERE id = ?";
+    $stmt = $conn->prepare($sql);
 
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -93,23 +103,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form action="" method="post">
                 <div class="info-section">
-                    <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
+                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
                     
                     <div class="form-group">
-                        <label>ID Sản phẩm</label>
-                        <input type="text" placeholder="ID Sản phẩm" name="idSP" value="<?php echo $row['idSP'] ?>">
+                        <label>Sản phẩm</label>
+                        <?php 
+                            $sqlSP = "SELECT * FROM sanpham";
+                            $resultSP = $conn->query($sqlSP);
+                            if ($resultSP->num_rows > 0) { ?>
+                                <select name="idSP">
+                                    <?php 
+                                        while ($rowSP = $resultSP->fetch_assoc()) {
+                                            $selected = ($rowSP['id'] == $row['idSP']) ? "selected" : "";
+                                            echo "<option value='{$rowSP['id']}' {$selected}>{$rowSP['tenSP']}</option>";
+                                        }
+                                    ?>
+                                </select>
+                            <?php } else {
+                                echo "Không có dữ liệu";
+                            }
+                        ?>
                     </div>
+
                     <div class="form-group">
-                        <label>ID Nhà cung cấp</label>
-                        <input type="text" placeholder="ID Nhà cung cấp" name="idNCC" value="<?php echo $row['idNCC'] ?>">
+                        <label>Nhà cung cấp</label>
+                        <?php 
+                            $sqlNCC = "SELECT * FROM nhacungcap";
+                            $resultNCC = $conn->query($sqlNCC);
+                            if ($resultNCC->num_rows > 0) { ?>
+                                <select name="idNCC">
+                                    <?php 
+                                        while ($rowNCC = $resultNCC->fetch_assoc()) {
+                                            $selected = ($rowNCC['id'] == $row['idNCC']) ? "selected" : "";
+                                            echo "<option value='{$rowNCC['id']}' {$selected}>{$rowNCC['tenNCC']}</option>";
+                                        }
+                                    ?>
+                                </select>
+                            <?php } else {
+                                echo "Không có dữ liệu";
+                            }
+                        ?>
                     </div>
+
                     <div class="form-group">
                         <label for="soLuong">Số lượng</label>
-                        <input type="number" id="soLuong" name="soLuong" placeholder="Số lượng" value="<?php echo $row['soLuong'] ?>"></input>
+                        <input type="number" id="soLuong" name="soLuong" placeholder="Số lượng" value="<?= $row['soLuong'] ?>">
                     </div>
                     <div class="form-group">
                         <label for="giaNhap">Giá nhập</label>
-                        <input type="number" id="giaNhap" name="giaNhap" placeholder="Giá nhập" value="<?php echo $row['giaNhap'] ?>"></input>
+                        <input type="number" id="giaNhap" name="giaNhap" placeholder="Giá nhập" value="<?= $row['giaNhap'] ?>">
                     </div>
                 </div>
 
@@ -123,3 +165,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+<?php
+        } else {
+            echo "<script>alert('Không tìm thấy dữ liệu!');</script>";
+        }
+        $stmt->close();
+    }
+}
+$conn->close();
+?>
