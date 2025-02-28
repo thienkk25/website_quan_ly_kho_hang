@@ -1,13 +1,13 @@
 <?php
 include '../connection.php';
 
-// Lấy dữ liệu tổng hợp từ bảng HangTonKho
+// Lấy dữ liệu tổng hợp từ bảng hangtonkho
 $sql_summary = "
     SELECT 
         SUM(htk.soLuong) AS tongSLTon, 
         SUM(htk.soLuong * nk.giaNhap) AS tongVonTonKho, 
         SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
-    FROM HangTonKho htk
+    FROM hangtonkho htk
     LEFT JOIN sanpham sp ON htk.idSP = sp.id
     LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP
     GROUP BY htk.idSP;
@@ -26,7 +26,7 @@ $sql_products = "
         COALESCE(htk.soLuong * nk.giaNhap, 0) AS vonTonKho,
         COALESCE(htk.soLuong * sp.giaSP, 0) AS giaTriTonKho
     FROM sanpham sp
-    LEFT JOIN HangTonKho htk ON sp.id = htk.idSP
+    LEFT JOIN hangtonkho htk ON sp.id = htk.idSP
     LEFT JOIN nhapkho nk ON sp.id = nk.idSP
     WHERE sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%'
     GROUP BY sp.id, sp.tenSP, sp.giaSP, htk.soLuong;
