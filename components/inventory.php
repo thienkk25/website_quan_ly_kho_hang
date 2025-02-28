@@ -1,26 +1,18 @@
 <?php
 include '../connection.php';
 
-// Lấy dữ liệu tổng hợp
+// Lấy dữ liệu tổng hợp từ bảng HangTonKho
 $sql_summary = "
     SELECT 
-        SUM(soLuongTon) AS tongSLTon, 
-        SUM(tongVonTonKho) AS tongVonTonKho, 
-        SUM(tongGiaTriTonKho) AS tongGiaTriTonKho
-    FROM (
-        SELECT 
-            sp.id, 
-            sp.tenSP, 
-            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon,
-            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * 
-            (COALESCE(SUM(nk.giaNhap * nk.soLuong) / NULLIF(SUM(nk.soLuong), 0), 0)) AS tongVonTonKho,
-            (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * sp.giaSP AS tongGiaTriTonKho
-        FROM sanpham sp
-        LEFT JOIN nhapkho nk ON sp.id = nk.idSP
-        LEFT JOIN xuatkho xk ON sp.id = xk.idSP
-        GROUP BY sp.id, sp.tenSP, sp.giaSP
-    ) AS subquery;
+        SUM(htk.soLuong) AS tongSLTon, 
+        SUM(htk.soLuong * nk.giaNhap) AS tongVonTonKho, 
+        SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
+    FROM HangTonKho htk
+    LEFT JOIN sanpham sp ON htk.idSP = sp.id
+    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP
+    GROUP BY htk.idSP;
 ";
+
 $result_summary = $conn->query($sql_summary);
 $summary = $result_summary->fetch_assoc();
 
@@ -30,16 +22,16 @@ $sql_products = "
     SELECT 
         sp.id AS maSP, 
         sp.tenSP, 
-        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon,
-        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * 
-        (COALESCE(SUM(nk.giaNhap * nk.soLuong) / NULLIF(SUM(nk.soLuong), 0), 0)) AS vonTonKho,
-        (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) * sp.giaSP AS giaTriTonKho
+        COALESCE(htk.soLuong, 0) AS soLuongTon,
+        COALESCE(htk.soLuong * nk.giaNhap, 0) AS vonTonKho,
+        COALESCE(htk.soLuong * sp.giaSP, 0) AS giaTriTonKho
     FROM sanpham sp
+    LEFT JOIN HangTonKho htk ON sp.id = htk.idSP
     LEFT JOIN nhapkho nk ON sp.id = nk.idSP
-    LEFT JOIN xuatkho xk ON sp.id = xk.idSP
     WHERE sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%'
-    GROUP BY sp.id, sp.tenSP, sp.giaSP;
+    GROUP BY sp.id, sp.tenSP, sp.giaSP, htk.soLuong;
 ";
+
 $result_products = $conn->query($sql_products);
 ?>
 
@@ -223,7 +215,7 @@ $result_products = $conn->query($sql_products);
                     <tr>
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
+                        <th>Số lượng tồn</th>
                         <th>Vốn tồn kho</th>
                         <th>Giá trị tồn</th>
                     </tr>

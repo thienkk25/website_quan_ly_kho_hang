@@ -4,15 +4,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idSP = $_POST['idSP'];
     $soLuong = $_POST['soLuong'];
 
-    // Truy vấn số lượng tồn kho hiện tại
-    $sql_check = "
-        SELECT (COALESCE(SUM(nk.soLuong), 0) - COALESCE(SUM(xk.soLuong), 0)) AS soLuongTon
-        FROM SanPham sp
-        LEFT JOIN NhapKho nk ON sp.id = nk.idSP
-        LEFT JOIN XuatKho xk ON sp.id = xk.idSP
-        WHERE sp.id = ?
-        GROUP BY sp.id;
-    ";
+    // Truy vấn số lượng tồn kho từ bảng hangtonkho
+    $sql_check = "SELECT soLuong FROM hangtonkho WHERE idSP = ?";
     
     $stmt_check = $conn->prepare($sql_check);
     if ($stmt_check) {
@@ -20,24 +13,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_check->execute();
         $result = $stmt_check->get_result();
         $row = $result->fetch_assoc();
-        $soLuongTon = $row['soLuongTon']; // Nếu không có, mặc định là 0
+        $soLuongTon = $row['soLuong'] ?? 0; // Nếu không có, mặc định là 0
         $stmt_check->close();
 
         // Kiểm tra số lượng xuất có hợp lệ không
         if ($soLuong > $soLuongTon) {
             echo '<script>alert("Lỗi: Số lượng xuất vượt quá số lượng tồn kho!");</script>';
         } else {
-            // Nếu hợp lệ, thực hiện xuất kho
-            $sql = "INSERT INTO XuatKho (idSP, soLuong) VALUES (?, ?)";
-            $stmt = $conn->prepare($sql);
-            if ($stmt) {
-                $stmt->bind_param("ii", $idSP, $soLuong);
-                if ($stmt->execute()) {
+            // Nếu hợp lệ, thêm vào bảng xuatkho
+            $sql_xuat = "INSERT INTO xuatkho (idSP, soLuong) VALUES (?, ?)";
+            $stmt_xuat = $conn->prepare($sql_xuat);
+            if ($stmt_xuat) {
+                $stmt_xuat->bind_param("ii", $idSP, $soLuong);
+                if ($stmt_xuat->execute()) {
+                    // Cập nhật lại số lượng tồn kho sau khi xuất
+                    $sql_update_ton = "UPDATE hangtonkho SET soLuong = soLuong - ? WHERE idSP = ?";
+                    $stmt_update_ton = $conn->prepare($sql_update_ton);
+                    if ($stmt_update_ton) {
+                        $stmt_update_ton->bind_param("ii", $soLuong, $idSP);
+                        $stmt_update_ton->execute();
+                        $stmt_update_ton->close();
+                    }
+
                     echo '<script>alert("Xuất phiếu kho thành công!");</script>';
                 } else {
-                    echo "Lỗi: " . $stmt->error;
+                    echo "Lỗi: " . $stmt_xuat->error;
                 }
-                $stmt->close();
+                $stmt_xuat->close();
             } else {
                 echo "Lỗi chuẩn bị truy vấn: " . $conn->error;
             }
@@ -46,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Lỗi khi kiểm tra tồn kho: " . $conn->error;
     }
 }
+
 ?>
 
 

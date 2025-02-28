@@ -4,35 +4,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'];
     $idSP = $_POST['idSP'];
     $idNCC = $_POST['idNCC'];
-    $soLuong = $_POST['soLuong'];
+    $soLuongMoi = $_POST['soLuong'];
     $giaNhap = $_POST['giaNhap'];
 
-    $sql = "UPDATE nhapkho SET idSP=?, idNCC=?, soLuong=?, giaNhap=?, ngayNhap=NOW() WHERE id=?";
-    $stmt = $conn->prepare($sql);
+    // Lấy số lượng nhập cũ trước khi cập nhật
+    $sql_old = "SELECT soLuong, idSP FROM nhapkho WHERE id = ?";
+    $stmt_old = $conn->prepare($sql_old);
+    $stmt_old->bind_param("i", $id);
+    $stmt_old->execute();
+    $result_old = $stmt_old->get_result();
+    
+    if ($result_old->num_rows == 0) {
+        echo "<script>alert('Lỗi: Phiếu nhập không tồn tại!');</script>";
+        exit;
+    }
 
-    if ($stmt) {
-        $stmt->bind_param("iiidi", $idSP, $idNCC, $soLuong, $giaNhap, $id);
-        if ($stmt->execute()) {
+    $row_old = $result_old->fetch_assoc();
+    $soLuongCu = $row_old['soLuong'];
+    $idSPCu = $row_old['idSP'];
+    $stmt_old->close();
+
+    // Cập nhật phiếu nhập kho
+    $sql_update = "UPDATE NhapKho SET idSP=?, idNCC=?, soLuong=?, giaNhap=?, ngayNhap=NOW() WHERE id=?";
+    $stmt_update = $conn->prepare($sql_update);
+
+    if ($stmt_update) {
+        $stmt_update->bind_param("iiidi", $idSP, $idNCC, $soLuongMoi, $giaNhap, $id);
+        if ($stmt_update->execute()) {
+            // Cập nhật bảng HangTonKho
+            if ($idSP == $idSPCu) {
+                // Nếu không đổi sản phẩm, chỉ cập nhật số lượng tồn
+                $chenhLech = $soLuongMoi - $soLuongCu;
+                $sql_ton = "UPDATE hangtonkho SET soLuong = soLuong + ? WHERE idSP = ?";
+                $stmt_ton = $conn->prepare($sql_ton);
+                $stmt_ton->bind_param("ii", $chenhLech, $idSP);
+            } else {
+                // Nếu đổi sản phẩm, cập nhật tồn kho của cả 2 sản phẩm
+                $sql_ton1 = "UPDATE hangtonkho SET soLuong = soLuong - ? WHERE idSP = ?";
+                $stmt_ton1 = $conn->prepare($sql_ton1);
+                $stmt_ton1->bind_param("ii", $soLuongCu, $idSPCu);
+                $stmt_ton1->execute();
+                $stmt_ton1->close();
+
+                $sql_ton2 = "INSERT INTO hangtonkho (idSP, soLuong) 
+                             VALUES (?, ?) 
+                             ON DUPLICATE KEY UPDATE soLuong = soLuong + VALUES(soLuong)";
+                $stmt_ton2 = $conn->prepare($sql_ton2);
+                $stmt_ton2->bind_param("ii", $idSP, $soLuongMoi);
+                $stmt_ton2->execute();
+                $stmt_ton2->close();
+            }
+
+            // Nếu không đổi sản phẩm, chỉ cần cập nhật số lượng
+            if (isset($stmt_ton)) {
+                $stmt_ton->execute();
+                $stmt_ton->close();
+            }
+
             echo "<script>alert('Cập nhật thành công!');</script>";
-            echo header('Location: warehouse_import.php');
+            echo "<script>window.location.href='warehouse_import.php';</script>";
         } else {
-            echo "<script>alert('Lỗi cập nhật!');</script>";
+            echo "<script>alert('Lỗi khi cập nhật phiếu nhập kho!');</script>";
         }
-        $stmt->close();
+        $stmt_update->close();
+    } else {
+        echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."');</script>";
     }
 }
 
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM nhapkho WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-
-    if ($stmt) {
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -84,12 +123,3 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 </body>
 
 </html>
-<?php
-        } else {
-            echo "<script>alert('Không tìm thấy dữ liệu!');</script>";
-        }
-        $stmt->close();
-    }
-}
-$conn->close();
-?>

@@ -6,20 +6,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $soLuong = $_POST['soLuong'];
     $giaNhap = $_POST['giaNhap'];
 
-    $sql = "INSERT INTO NhapKho (idSP, idNCC, soLuong, giaNhap) VALUES (?, ?, ?, ?)";
+    // Kiểm tra sản phẩm có tồn tại không
+    $sql_check = "SELECT id FROM sanpham WHERE id = ?";
+    $stmt_check = $conn->prepare($sql_check);
+    $stmt_check->bind_param("i", $idSP);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+    
+    if ($result_check->num_rows == 0) {
+        echo "<script>alert('Sản phẩm không tồn tại!');</script>";
+        $stmt_check->close();
+        exit;
+    }
+    $stmt_check->close();
+
+    // Thêm phiếu nhập kho vào bảng nhapkho
+    $sql = "INSERT INTO nhapkho (idSP, idNCC, soLuong, giaNhap) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if ($stmt) {
         $stmt->bind_param("iiid", $idSP, $idNCC, $soLuong, $giaNhap);
         if ($stmt->execute()) {
-            echo "<script>alert('Thêm phiếu nhập kho thành công!')</script>";
+            // Nếu nhập kho thành công, cập nhật bảng hangtonkho
+            $sql_nhap = "INSERT INTO hangtonkho (idSP, soLuong) 
+                         VALUES (?, ?) 
+                         ON DUPLICATE KEY UPDATE soLuong = soLuong + VALUES(soLuong)";
+            $stmtN = $conn->prepare($sql_nhap);
+            $stmtN->bind_param("ii", $idSP, $soLuong);
+            $stmtN->execute();
+            $stmtN->close();
+
+            echo "<script>alert('Thêm phiếu nhập kho thành công!');</script>";
         } else {
-            echo "<script>alert('Lỗi không tồn tại sản phẩm trong kho')</script>";
+            echo "<script>alert('Lỗi khi nhập kho: ".$stmt->error."');</script>";
         }
         $stmt->close();
     } else {
-        echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."')</script>";
+        echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."');</script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
