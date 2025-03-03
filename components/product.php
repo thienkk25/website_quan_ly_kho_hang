@@ -12,6 +12,7 @@ if (isset($_GET['search'])) {
 }
 
 $result = mysqli_query($conn, $sql);
+include "../role.php";
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +58,9 @@ $result = mysqli_query($conn, $sql);
                     <input type="text" name="search" placeholder="Nhập mã hoặc tên sản phẩm" value="<?php echo $search; ?>">
                     <button type="submit" style="margin-top: 10px;">Tìm kiếm</button>
                 </form>
-                <a href="create_product.php"  name="add" ><button style="margin-top: 10px;">Thêm sản phẩm</button></a>
+                <?php if($userRole['idVaiTro'] == 1){?>
+                    <a href="create_product.php"  name="add" ><button style="margin-top: 10px;">Thêm sản phẩm</button></a>
+                     <?php } ?>
             </header>
             <table>
                 <thead>
@@ -76,15 +79,21 @@ $result = mysqli_query($conn, $sql);
                         <td><?php echo $row['motaSP'];  ?></td>
                         <td><?php echo number_format($row['giaSP'], 2)  ?> VND</td>
                         <td><?php echo $row['created_at'];  ?></td>
-                        <td>
-                        <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
-                            <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
-                        </td>
-                        <td>
-                        <a href="update_product.php?id=<?php echo $row['id']; ?>">
-                            <button type="submit" class="btn btn-primary" name="add">Sửa</button>
-                        </a>
-                        </td>
+                        <?php 
+                            
+                           if ($userRole['idVaiTro'] == 1){ ?>
+                           <td>
+                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
+                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                            </td>
+                            <td>
+                            <a href="update_product.php?id=<?php echo $row['id']; ?>">
+                                <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                            </a>
+                            </td>
+                             <?php }
+                             ?>
+                        
                     </tr>
                 <?php endwhile; ?>
             </table>
