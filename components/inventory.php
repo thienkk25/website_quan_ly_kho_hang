@@ -1,6 +1,7 @@
 <?php
-include '../connection.php';
  session_start();
+ include '../connection.php';
+ include '../role.php';
 
 
 // Lấy dữ liệu tổng hợp từ bảng hangtonkho
@@ -9,10 +10,10 @@ $sql_summary = "
         SUM(htk.soLuong) AS tongSLTon, 
         SUM(htk.soLuong * nk.giaNhap) AS tongVonTonKho, 
         SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
-    FROM hangtonkho htk
-    LEFT JOIN sanpham sp ON htk.idSP = sp.id
-    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP
-";
+    FROM (((hangtonkho htk
+    LEFT JOIN sanpham sp ON htk.idSP = sp.id)
+    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP)
+    LEFT JOIN kho k ON htk.idKho = k.id) WHERE ".($userRole['idKho'] == null ? "1" : "htk.idKho='".$userRole['idKho']."'");
 
 $result_summary = $conn->query($sql_summary);
 $summary = $result_summary->fetch_assoc();
@@ -26,10 +27,12 @@ $sql_products = "
         COALESCE(htk.soLuong, 0) AS soLuongTon,
         COALESCE(htk.soLuong * nk.giaNhap, 0) AS vonTonKho,
         COALESCE(htk.soLuong * sp.giaSP, 0) AS giaTriTonKho
-    FROM sanpham sp
-    LEFT JOIN hangtonkho htk ON sp.id = htk.idSP
-    LEFT JOIN nhapkho nk ON sp.id = nk.idSP
-    WHERE sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%'
+    FROM (((sanpham sp
+    LEFT JOIN hangtonkho htk ON sp.id = htk.idSP)
+    LEFT JOIN nhapkho nk ON sp.id = nk.idSP)
+    LEFT JOIN kho k ON htk.idKho = k.id)
+    WHERE (" . ($userRole['idKho'] == null ? "1" : "htk.idKho = '" . $userRole['idKho'] . "'") . ")
+    AND (sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%')
     GROUP BY sp.id, sp.tenSP, sp.giaSP, htk.soLuong;
 ";
 

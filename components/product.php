@@ -1,7 +1,7 @@
 <?php
+session_start();
 include '../connection.php';
- session_start();
-
+include "../role.php";
 // Xử lý tìm kiếm
 $search = "";
 if (isset($_GET['search'])) {

@@ -1,5 +1,7 @@
-<?php include "../connection.php"; ?>
 <?php
+session_start();
+include "../connection.php";
+include "../role.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'];
     $idSP = $_POST['idSP'];
@@ -8,9 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $giaNhap = $_POST['giaNhap'];
 
     // Lấy số lượng nhập cũ trước khi cập nhật
-    $sql_old = "SELECT soLuong, idSP FROM nhapkho WHERE id = ?";
+    $sql_old = "SELECT soLuong, idSP FROM nhapkho WHERE id = ? AND idKho = ?";
     $stmt_old = $conn->prepare($sql_old);
-    $stmt_old->bind_param("i", $id);
+    $stmt_old->bind_param("ii", $id, $userRole['idKho']);
     $stmt_old->execute();
     $result_old = $stmt_old->get_result();
     
@@ -25,32 +27,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_old->close();
 
     // Cập nhật phiếu nhập kho
-    $sql_update = "UPDATE NhapKho SET idSP=?, idNCC=?, soLuong=?, giaNhap=?, ngayNhap=NOW() WHERE id=?";
+    $sql_update = "UPDATE NhapKho SET idSP=?, idNCC=?, soLuong=?, giaNhap=?, ngayNhap=NOW() WHERE id = ? AND idKho = ?";
     $stmt_update = $conn->prepare($sql_update);
 
     if ($stmt_update) {
-        $stmt_update->bind_param("iiidi", $idSP, $idNCC, $soLuongMoi, $giaNhap, $id);
+        $stmt_update->bind_param("iiidii", $idSP, $idNCC, $soLuongMoi, $giaNhap, $id, $userRole['idKho']);
         if ($stmt_update->execute()) {
             // Cập nhật bảng HangTonKho
             if ($idSP == $idSPCu) {
                 // Nếu không đổi sản phẩm, chỉ cập nhật số lượng tồn
                 $chenhLech = $soLuongMoi - $soLuongCu;
-                $sql_ton = "UPDATE hangtonkho SET soLuong = soLuong + ? WHERE idSP = ?";
+                $sql_ton = "UPDATE hangtonkho SET soLuong = soLuong + ? WHERE idSP = ? AND idKho = ?";
                 $stmt_ton = $conn->prepare($sql_ton);
-                $stmt_ton->bind_param("ii", $chenhLech, $idSP);
+                $stmt_ton->bind_param("iii", $chenhLech, $idSP, $userRole['idKho']);
             } else {
                 // Nếu đổi sản phẩm, cập nhật tồn kho của cả 2 sản phẩm
-                $sql_ton1 = "UPDATE hangtonkho SET soLuong = soLuong - ? WHERE idSP = ?";
+                $sql_ton1 = "UPDATE hangtonkho SET soLuong = soLuong - ? WHERE idSP = ? AND idKho = ?";
                 $stmt_ton1 = $conn->prepare($sql_ton1);
-                $stmt_ton1->bind_param("ii", $soLuongCu, $idSPCu);
+                $stmt_ton1->bind_param("iii", $soLuongCu, $idSPCu, $userRole['idKho']);
                 $stmt_ton1->execute();
                 $stmt_ton1->close();
 
-                $sql_ton2 = "INSERT INTO hangtonkho (idSP, soLuong) 
-                             VALUES (?, ?) 
+                $sql_ton2 = "INSERT INTO hangtonkho (idSP, idKho, soLuong) 
+                             VALUES (?, ?, ?) 
                              ON DUPLICATE KEY UPDATE soLuong = soLuong + VALUES(soLuong)";
                 $stmt_ton2 = $conn->prepare($sql_ton2);
-                $stmt_ton2->bind_param("ii", $idSP, $soLuongMoi);
+                $stmt_ton2->bind_param("iii", $idSP, $userRole['idKho'], $soLuongMoi);
                 $stmt_ton2->execute();
                 $stmt_ton2->close();
             }
@@ -73,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
-    $sql = "SELECT * FROM nhapkho WHERE id = ?";
+    $sql = "SELECT * FROM nhapkho WHERE id = ? AND idKho = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("ii", $id, $userRole['idKho']);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {

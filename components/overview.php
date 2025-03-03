@@ -1,5 +1,4 @@
 <?php
-    include "connection.php";
     $sqlSP = "SELECT * FROM sanpham";
     $resultSP = $conn->query($sqlSP);
     $sqlNCC = "SELECT * FROM nhacungcap";
@@ -8,10 +7,10 @@
     $sql_summary = "
     SELECT 
         SUM(htk.soLuong) AS tongSLTon
-    FROM hangtonkho htk
-    LEFT JOIN sanpham sp ON htk.idSP = sp.id
-    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP
-    ";
+    FROM (((hangtonkho htk
+    LEFT JOIN sanpham sp ON htk.idSP = sp.id)
+    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP)
+    LEFT JOIN kho k ON htk.idKho = k.id) WHERE ".($userRole['idKho'] == null ? "1" : "htk.idKho='".$userRole['idKho']."'");
 
     $result_summary = $conn->query($sql_summary);
     $summary = $result_summary->fetch_assoc();
@@ -21,12 +20,12 @@
 </header>
 <div class="stats">
     <div class="stat-card green">
-        <h2>Tiền bán hàng</h2>
-        <p>0</p>
+        <h2></h2>
+        <p></p>
     </div>
     <div class="stat-card blue">
-        <h2>Số đơn hàng</h2>
-        <p>0</p>
+        <h2></h2>
+        <p></p>
     </div>
     <div class="stat-card red">
         <h2>Số sản phẩm</h2>

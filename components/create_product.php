@@ -1,3 +1,8 @@
+<?php 
+session_start();
+include '../connection.php';
+include "../role.php";
+?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,8 +12,6 @@
     <title>Thêm sản phẩm</title>
 </head>
 <body>
-
-    <?php require_once '../connection.php' ?>
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tenSP = $_POST['tenSP'];

@@ -1,5 +1,7 @@
-<?php include "../connection.php"; ?>
 <?php
+session_start();
+include "../connection.php";
+include "../role.php";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idSP = $_POST['idSP'];
     $idNCC = $_POST['idNCC'];
@@ -21,17 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_check->close();
 
     // Thêm phiếu nhập kho vào bảng nhapkho
-    $sql = "INSERT INTO nhapkho (idSP, idNCC, soLuong, giaNhap) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO nhapkho (idSP, idNCC, idKho, soLuong, giaNhap) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("iiid", $idSP, $idNCC, $soLuong, $giaNhap);
+        $stmt->bind_param("iiiid", $idSP, $idNCC, $userRole['idKho'], $soLuong, $giaNhap);
         if ($stmt->execute()) {
             // Nếu nhập kho thành công, cập nhật bảng hangtonkho
-            $sql_nhap = "INSERT INTO hangtonkho (idSP, soLuong) 
-                         VALUES (?, ?) 
+            $sql_nhap = "INSERT INTO hangtonkho (idSP, idKho, soLuong) 
+                         VALUES (?, ?, ?) 
                          ON DUPLICATE KEY UPDATE soLuong = soLuong + VALUES(soLuong)";
             $stmtN = $conn->prepare($sql_nhap);
-            $stmtN->bind_param("ii", $idSP, $soLuong);
+            $stmtN->bind_param("iii", $idSP, $userRole['idKho'], $soLuong);
             $stmtN->execute();
             $stmtN->close();
 

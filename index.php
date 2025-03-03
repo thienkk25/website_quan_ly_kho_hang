@@ -1,6 +1,7 @@
 <?php
  session_start();
  include "connection.php";
+ include "role.php";
 ?>
 <!DOCTYPE html>
 <html lang="vi">

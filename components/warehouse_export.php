@@ -1,16 +1,16 @@
-<?php include "../connection.php"; ?>
 <?php
  session_start();
-?>
-<?php
+ include "../connection.php";
+ include "../role.php";
+
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
 
 $sql = "SELECT xuatkho.id, sanpham.tenSP, xuatkho.soLuong, sanpham.giaSP, xuatkho.ngayXuat
-        FROM xuatkho 
-        INNER JOIN sanpham ON xuatkho.idSP = sanpham.id
-        WHERE 1";  // WHERE 1 để dễ dàng nối thêm điều kiện sau
+        FROM ((xuatkho 
+        INNER JOIN sanpham ON xuatkho.idSP = sanpham.id)
+        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE ".($userRole['idKho'] == null ? "1" : "idKho='".$userRole['idKho']."'");
 
 // Thêm điều kiện tìm kiếm nếu có $search
 if (!empty($search)) {
@@ -134,9 +134,9 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                 <p>Tổng tiền: 
                     <?php
                         $sql_total = "SELECT SUM(xuatkho.soLuong * sanpham.giaSP) AS tongTienTK 
-                                        FROM xuatkho 
-                                        INNER JOIN sanpham ON xuatkho.idSP = sanpham.id
-                                        WHERE 1";
+                                        FROM ((xuatkho 
+                                        INNER JOIN sanpham ON xuatkho.idSP = sanpham.id)
+                                        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE ".($userRole['idKho'] == null ? "1" : "idKho='".$userRole['idKho']."'");
 
                         if (!empty($search)) {
                             $sql_total .= " AND (xuatkho.id LIKE '%$search%' OR sanpham.tenSP LIKE '%$search%')";
