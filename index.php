@@ -17,16 +17,7 @@
             <?php include "sidebar.php" ?>
         </aside>
         <main class="main-content">
-            <div>
-                <?php  
-                if (isset($_SESSION['username'])) {
-                    echo "Xin chào, " . $_SESSION['username'];
-                } else {
-                    echo "Bạn chưa đăng nhập!";
-                    header('location: login.php');
-                } 
-                ?>        
-            </div>
+            <?php include "top_header_main.php" ?>
             <?php include "components\overview.php" ?>
         </main>
     </div>

@@ -1,5 +1,6 @@
 <?php
 include '../connection.php';
+ session_start();
 
 // Xử lý tìm kiếm
 $search = "";
@@ -49,6 +50,7 @@ $result = mysqli_query($conn, $sql);
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
+            <?php include "../top_header_main.php"?>
             <header>
             <h2>Danh sách sản phẩm</h2>
                 <form method="GET" action="">

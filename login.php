@@ -16,7 +16,7 @@
         $password = mysqli_real_escape_string($conn, $password);
 
         // Query to check if the user exists by username and password
-        $sql = "SELECT * FROM admin WHERE username = '$username' AND password = '$password'";
+        $sql = "SELECT * FROM taikhoan WHERE username = '$username' AND password = '$password'";
         $result = mysqli_query($conn, $sql);
 
         // Check if credentials match

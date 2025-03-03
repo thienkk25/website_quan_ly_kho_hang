@@ -1,4 +1,7 @@
 <?php include "../connection.php"; ?>
+<?php
+ session_start();
+?>
 <?php 
     $search = isset($_GET['search']) ? $_GET['search'] : "";
     $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
@@ -13,6 +16,10 @@
     // Thêm điều kiện tìm kiếm nếu có `$search`
     if (!empty($search)) {
         $sql .= " AND (nhapkho.id LIKE '%$search%' OR sanpham.tenSP LIKE '%$search%')";
+    }
+    if($date_from > $date_to ){
+        echo '<script>alert("Lỗi ngày");</script>';
+        exit;
     }
     
     // Thêm điều kiện lọc theo ngày nhập
@@ -67,6 +74,7 @@
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
+            <?php include "../top_header_main.php" ?>
             <h2>Danh sách phiếu nhập kho</h2>
             <div class="search-bar">
                 <form method="GET" action="">

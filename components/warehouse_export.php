@@ -1,5 +1,8 @@
 <?php include "../connection.php"; ?>
 <?php
+ session_start();
+?>
+<?php
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
@@ -66,6 +69,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
+            <?php include "../top_header_main.php" ?>
             <h2>Danh sách phiếu xuất kho</h2>
             <div class="search-bar">
             <form method="GET" action="">

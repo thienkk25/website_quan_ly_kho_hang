@@ -1,5 +1,7 @@
 <?php
 include '../connection.php';
+ session_start();
+
 
 // Lấy dữ liệu tổng hợp từ bảng hangtonkho
 $sql_summary = "
@@ -179,6 +181,7 @@ $result_products = $conn->query($sql_products);
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
+            <?php include "../top_header_main.php" ?>
             <div class="header">
                 <h2>Quản lý kho</h2>
                 <form method="GET" action="">
