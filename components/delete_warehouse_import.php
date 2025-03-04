@@ -7,11 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['id']) && is_numeric($_POST['id'])) {
         $id = intval($_POST['id']);
 
-        $sql = "DELETE FROM nhapkho WHERE id = ? AND idKho= ?";
+        $sql = "DELETE FROM nhapkho WHERE id = ?";
         $stmt = $conn->prepare($sql);
 
         if ($stmt) {
-            $stmt->bind_param("ii", $id,$userRole['idKho']);
+            $stmt->bind_param("i", $id);
             if ($stmt->execute()) {
                 $message = "Xoá phiếu nhập kho thành công!";
             } else {

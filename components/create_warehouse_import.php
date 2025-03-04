@@ -21,7 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     $stmt_check->close();
-
+    
+    if(isset($_POST['idKho']) && $userRole['idVaiTro'] == 1){
+        $userRole['idKho'] = $_POST['idKho'];
+    }
     // Thêm phiếu nhập kho vào bảng nhapkho
     $sql = "INSERT INTO nhapkho (idSP, idNCC, idKho, soLuong, giaNhap) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -69,6 +72,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form action="" method="post">
             <div class="info-section">
+                <?php
+                    if ($userRole['idVaiTro'] == 1) {
+                        echo '
+                        <div class="form-group">
+                            <label>Kho</label>';
+                        
+                        $sqlKho = "SELECT * FROM kho";
+                        $resultKho = $conn->query($sqlKho);
+                        
+                        if ($resultKho->num_rows > 0) {
+                            echo '<select name="idKho">';
+                            while ($row = $resultKho->fetch_assoc()) {
+                                echo '<option value="'.$row['id'].'">'.$row['tenKho'].'</option>';
+                            }
+                            echo '</select>';
+                        } else {
+                            echo "Không có dữ liệu";
+                        }
+
+                        echo '</div>';
+                    }
+                ?>
                 <div class="form-group">
                     <label>Sản phẩm</label>
                     <?php 

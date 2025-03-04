@@ -9,6 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $soLuongMoi = $_POST['soLuong'];
     $giaNhap = $_POST['giaNhap'];
 
+    if(isset($_POST['idKho']) && $userRole['idVaiTro'] == 1 && $userRole['idKho'] == null ){
+        $userRole['idKho'] = $_POST['idKho'];
+    }
+
     // Lấy số lượng nhập cũ trước khi cập nhật
     $sql_old = "SELECT soLuong, idSP FROM nhapkho WHERE id = ? AND idKho = ?";
     $stmt_old = $conn->prepare($sql_old);
@@ -17,8 +21,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result_old = $stmt_old->get_result();
     
     if ($result_old->num_rows == 0) {
-        echo "<script>alert('Lỗi: Phiếu nhập không tồn tại!');</script>";
-        exit;
+        $sqlDel = "DELETE FROM nhapkho WHERE id = ?";
+        $stmtDel = $conn->prepare($sqlDel);
+        $stmtDel->bind_param("i", $id);
+        $stmtDel->execute();  
+        $stmtDel->close();
+        
+        // Thêm phiếu nhập kho vào bảng nhapkho
+        $sql = "INSERT INTO nhapkho (idSP, idNCC, idKho, soLuong, giaNhap) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        if ($stmt) {
+            $stmt->bind_param("iiiid", $idSP, $idNCC, $userRole['idKho'], $soLuongMoi, $giaNhap);
+            if ($stmt->execute()) {
+                // Nếu nhập kho thành công, cập nhật bảng hangtonkho
+                $sql_nhap = "INSERT INTO hangtonkho (idSP, idKho, soLuong) 
+                            VALUES (?, ?, ?) 
+                            ON DUPLICATE KEY UPDATE soLuong = soLuong + VALUES(soLuong)";
+                $stmtN = $conn->prepare($sql_nhap);
+                $stmtN->bind_param("iii", $idSP, $userRole['idKho'], $soLuongMoi);
+                $stmtN->execute();
+                $stmtN->close();
+
+                echo "<script>alert('Sửa phiếu nhập kho thành công!');</script>";
+            } else {
+                echo "<script>alert('Lỗi khi nhập kho: ".$stmt->error."');</script>";
+            }
+            $stmt->close();
+        } else {
+            echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."');</script>";
+        }
+        header("Location: warehouse_import.php");
+        exit(200);
     }
 
     $row_old = $result_old->fetch_assoc();
@@ -73,13 +106,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Lỗi chuẩn bị truy vấn: ".$conn->error."');</script>";
     }
 }
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id']) && is_numeric($_GET['id']) && isset($_GET['idKho']) && is_numeric($_GET['idKho'])) {
     $id = $_GET['id'];
+    $idKho = $_GET['idKho'];
+
+    if($userRole['idVaiTro'] != 1 && $userRole['idKho'] != $idKho){
+        echo "Lỗi";
+        exit();
+    }
+
     $sql = "SELECT * FROM nhapkho WHERE id = ? AND idKho = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("ii", $id, $userRole['idKho']);
+        $stmt->bind_param("ii", $id, $idKho);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
@@ -106,7 +146,29 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             <form action="" method="post">
                 <div class="info-section">
                     <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                    
+                    <?php
+                        if ($userRole['idVaiTro'] == 1) {
+                            echo '
+                            <div class="form-group">
+                                <label>Kho</label>';
+                            
+                            $sqlKho = "SELECT * FROM kho";
+                            $resultKho = $conn->query($sqlKho);
+                            
+                            if ($resultKho->num_rows > 0) {
+                                echo '<select name="idKho">';
+                                while ($rowKho = $resultKho->fetch_assoc()) {
+                                    $selected = ($rowKho['id'] == $row['idKho']) ? "selected" : "";
+                                    echo "<option value='{$rowKho['id']}' {$selected}>{$rowKho['tenKho']}</option>";
+                                }
+                                echo '</select>';
+                            } else {
+                                echo "Không có dữ liệu";
+                            }
+
+                            echo '</div>';
+                        }
+                    ?>
                     <div class="form-group">
                         <label>Sản phẩm</label>
                         <?php 

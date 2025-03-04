@@ -7,7 +7,7 @@
     $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
     $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
     
-    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap
+    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, kho.tenKho, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap, kho.id as idKho
             FROM (((nhapkho 
             INNER JOIN sanpham ON nhapkho.idSP = sanpham.id) 
             INNER JOIN nhacungcap ON nhacungcap.id = nhapkho.idNCC)
@@ -90,7 +90,7 @@
                 </form>
                 
                 <a href="create_warehouse_import.php"
-                    target="_blank"><button>Tạo
+                    ><button>Tạo
                         phiếu nhập</button></a>
             </div>
             <table>
@@ -99,6 +99,7 @@
                         <th>Mã phiếu nhập</th>
                         <th>Tên sản phẩm</th>
                         <th>Tên nhà cung cấp</th>
+                        <th>Tên kho</th>
                         <th>Số lượng</th>
                         <th>Giá Nhập</th>
                         <th>Ngày Nhập</th>
@@ -118,6 +119,7 @@
                                     <td>{$row['id']}</td>
                                     <td>{$row['tenSP']}</td>
                                     <td>{$row['tenNCC']}</td>
+                                    <td>{$row['tenKho']}</td>
                                     <td>{$soLuong}</td>
                                     <td>".number_format($giaNhap, 2)." VND</td>
                                     <td>{$row['ngayNhap']}</td>
@@ -125,6 +127,7 @@
                                     <td>
                                         <form method='GET' action='update_warehouse_import.php'>
                                             <input type='hidden' name='id' value='{$row['id']}'>
+                                            <input type='hidden' name='idKho' value='{$row['idKho']}'>
                                             <button type='submit'>Sửa</button>
                                         </form>
                                     </td>

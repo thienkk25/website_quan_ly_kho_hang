@@ -85,7 +85,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                     <button type="submit">Tìm kiếm</button>
                 </form>
                 <a href="create_warehouse_export.php"
-                    target="_blank"><button>Xuất
+                    ><button>Xuất
                         phiếu</button></a>
             </div>
             <table>
