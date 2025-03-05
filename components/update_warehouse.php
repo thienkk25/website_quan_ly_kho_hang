@@ -9,22 +9,22 @@ include "../role.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
-    <title>Cập nhật nhà cung cấp</title>
+    <title>Cập nhật kho</title>
 </head>
 <body>
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'];
-            $tenNCC = $_POST['tenNCC'];
-            $thongTinLienHe = $_POST['thongTinLienHe'];
+            $tenKho = $_POST['tenKho'];
+            $diaChi = $_POST['diaChi'];
 
-            $sql = "UPDATE nhacungcap SET tenNCC = ?, thongTinLienHe = ? WHERE id = ?";
+            $sql = "UPDATE kho SET tenKho = ?, diaChi = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
-                $stmt->bind_param("ssi", $tenNCC, $thongTinLienHe, $id);
+                $stmt->bind_param("ssi", $tenKho, $diaChi, $id);
                 if ($stmt->execute()) {
-                    echo header('Location: supplier.php');
+                    echo header('Location: warehouse.php');
                 } else {
                     echo "<script>alert('Lỗi cập nhật!');</script>";
                 }
@@ -33,7 +33,7 @@ include "../role.php";
         }
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $id = $_GET['id'];
-            $sql = "SELECT * FROM nhacungcap WHERE id = ?";
+            $sql = "SELECT * FROM kho WHERE id = ?";
             $stmt = $conn->prepare($sql);
         
             if ($stmt) {
@@ -45,17 +45,17 @@ include "../role.php";
     ?>
 
     <div class="container">
-    <h1 style="text-align: center;">Cập nhật nhà cung cấp</h1><br>
+    <h1 style="text-align: center;">Cập nhật kho</h1><br>
             <div class="col-6" style="margin: auto; background-color: #e3f6fb; padding-bottom: 1px; border-radius: 10px;">
                 <form action="" method="POST">
                     <input type="hidden" name="id" value="<?php echo $row['id'] ?>">
                     <div class="form-group">
-                        <label for="tenNCC">Tên nhà cung cấp:</label>
-                        <input class="form-control" type="text" name="tenNCC" required value="<?php echo $row['tenNCC'] ?>">
+                        <label for="tenKho">Tên kho:</label>
+                        <input class="form-control" type="text" name="tenKho" required value="<?php echo $row['tenKho'] ?>">
                     </div>
                     <div class="form-group">
-                        <label for="thongTinLienHe">Thông tin liên hệ:</label>
-                        <input class="form-control" type="text" name="thongTinLienHe" required value="<?php echo $row['thongTinLienHe'] ?>">
+                        <label for="diaChi">Thông tin liên hệ:</label>
+                        <input class="form-control" type="text" name="diaChi" required value="<?php echo $row['diaChi'] ?>">
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Sửa</button>
