@@ -6,6 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idSP = $_POST['idSP'];
     $soLuong = $_POST['soLuong'];
 
+    if(isset($_POST['idKho']) && $userRole['idVaiTro'] == 1){
+        $userRole['idKho'] = $_POST['idKho'];
+    }
+
     // Truy vấn số lượng tồn kho từ bảng hangtonkho
     $sql_check = "SELECT soLuong FROM hangtonkho WHERE idSP = ? AND idKho = ?";
     
@@ -15,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_check->execute();
         $result = $stmt_check->get_result();
         $row = $result->fetch_assoc();
-        $soLuongTon = $row['soLuong'] ?? 0; // Nếu không có, mặc định là 0
+        $soLuongTon = $row['soLuong'];
         $stmt_check->close();
 
         // Kiểm tra số lượng xuất có hợp lệ không
@@ -75,6 +79,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="" method="post">
             <div class="info-section">
                 <div class="form-group">
+                    <?php
+                        if ($userRole['idVaiTro'] == 1) {
+                            echo '
+                            <div class="form-group">
+                                <label>Kho</label>';
+                            
+                            $sqlKho = "SELECT * FROM kho";
+                            $resultKho = $conn->query($sqlKho);
+                            
+                            if ($resultKho->num_rows > 0) {
+                                echo '<select name="idKho">';
+                                while ($row = $resultKho->fetch_assoc()) {
+                                    echo '<option value="'.$row['id'].'">'.$row['tenKho'].'</option>';
+                                }
+                                echo '</select>';
+                            } else {
+                                echo "Không có dữ liệu";
+                            }
+
+                            echo '</div>';
+                        }
+                    ?>
                     <label>Sản phẩm</label>
                     <?php 
                              $sqlSP = "SELECT * FROM sanpham";

@@ -3,14 +3,14 @@
     $resultSP = $conn->query($sqlSP);
     $sqlNCC = "SELECT * FROM nhacungcap";
     $resultNCC = $conn->query($sqlNCC);
+    $idKhoFilter = isset($_GET['idKho']) && is_numeric($_GET['idKho']) ? intval($_GET['idKho']) : null;
     // Lấy dữ liệu tổng hợp từ bảng hangtonkho
     $sql_summary = "
     SELECT 
-        SUM(htk.soLuong) AS tongSLTon
-    FROM (((hangtonkho htk
-    LEFT JOIN sanpham sp ON htk.idSP = sp.id)
-    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP)
-    LEFT JOIN kho k ON htk.idKho = k.id) WHERE ".($userRole['idKho'] == null ? "1" : "htk.idKho='".$userRole['idKho']."'");
+        SUM(htk.soLuong) AS tongSLTon    
+    FROM hangtonkho htk
+    LEFT JOIN sanpham sp ON htk.idSP = sp.id
+    LEFT JOIN kho k ON htk.idKho = k.id WHERE " . ($idKhoFilter !== null ? "htk.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "htk.idKho='" . $userRole['idKho'] . "'"));
 
     $result_summary = $conn->query($sql_summary);
     $summary = $result_summary->fetch_assoc();

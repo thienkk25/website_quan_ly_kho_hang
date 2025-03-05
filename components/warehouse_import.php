@@ -6,20 +6,19 @@
     $search = isset($_GET['search']) ? $_GET['search'] : "";
     $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
     $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
-    
-    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, kho.tenKho, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap, kho.id as idKho
+    $idKhoFilter = isset($_GET['idKho']) && is_numeric($_GET['idKho']) ? intval($_GET['idKho']) : null;
+    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, kho.tenKho, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap, kho.id as idKho, sanpham.id as idSP
             FROM (((nhapkho 
             INNER JOIN sanpham ON nhapkho.idSP = sanpham.id) 
             INNER JOIN nhacungcap ON nhacungcap.id = nhapkho.idNCC)
-            INNER JOIN kho ON kho.id = nhapkho.idKho) WHERE ".($userRole['idKho'] == null ? "1" : "idKho='".$userRole['idKho']."'");
+            INNER JOIN kho ON kho.id = nhapkho.idKho) WHERE " . ($idKhoFilter !== null ? "nhapkho.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "nhapkho.idKho='" . $userRole['idKho'] . "'"));
     
     // Thêm điều kiện tìm kiếm nếu có `$search`
     if (!empty($search)) {
         $sql .= " AND (nhapkho.id LIKE '%$search%' OR sanpham.tenSP LIKE '%$search%')";
     }
     if($date_from > $date_to ){
-        echo '<script>alert("Lỗi ngày");</script>';
-        exit;
+        echo "<script>alert('Lỗi ngày nhập!'); window.history.back();</script>";
     }
     
     // Thêm điều kiện lọc theo ngày nhập
@@ -79,9 +78,6 @@
             <div class="search-bar">
                 <form method="GET" action="">
                     <input type="text" name="search" placeholder="Nhập mã phiếu nhập hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
-                    <select>
-                        <option>Phiếu nhập</option>
-                    </select>
                     <span>Từ</span>
                     <input type="date" name="date_from">
                     <span>đến</span>
@@ -134,6 +130,8 @@
                                     <td>
                                         <form id='deleteForm{$row['id']}' method='POST' action='delete_warehouse_import.php'>
                                             <input type='hidden' name='id' value='{$row['id']}'>
+                                            <input type='hidden' name='idSP' value='{$row['idSP']}'>
+                                            <input type='hidden' name='idKho' value='{$row['idKho']}'>
                                         </form>
                                         <button onclick='confirmDelete({$row['id']})'>Xoá</button>
                                     </td>

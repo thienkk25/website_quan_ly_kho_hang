@@ -7,10 +7,12 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
 $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
 
-$sql = "SELECT xuatkho.id, sanpham.tenSP, xuatkho.soLuong, sanpham.giaSP, xuatkho.ngayXuat
+$idKhoFilter = isset($_GET['idKho']) && is_numeric($_GET['idKho']) ? intval($_GET['idKho']) : null;
+
+$sql = "SELECT xuatkho.id, sanpham.tenSP, xuatkho.soLuong, sanpham.giaSP, xuatkho.ngayXuat, kho.tenKho
         FROM ((xuatkho 
         INNER JOIN sanpham ON xuatkho.idSP = sanpham.id)
-        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE ".($userRole['idKho'] == null ? "1" : "idKho='".$userRole['idKho']."'");
+        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE " . ($idKhoFilter !== null ? "xuatkho.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "xuatkho.idKho='" . $userRole['idKho'] . "'"));
 
 // Thêm điều kiện tìm kiếm nếu có $search
 if (!empty($search)) {
@@ -74,10 +76,6 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
             <div class="search-bar">
             <form method="GET" action="">
                     <input type="text" name="search" placeholder="Nhập mã phiếu xuất hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
-                    
-                    <select>
-                        <option>Phiếu Xuất</option>
-                    </select>
                     <span>Từ</span>
                     <input type="date" name="date_from">
                     <span>đến</span>
@@ -94,6 +92,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                         <th>Mã phiếu xuất</th>
                         <th>Tên sản phẩm</th>
                         <th>Giá sản phẩm</th>
+                        <th>Tên kho</th>
                         <th>Số lượng</th>
                         <th>Ngày xuất</th>
                         <th>Tổng tiền</th>
@@ -114,6 +113,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                                     <td>{$row['id']}</td>
                                     <td>{$row['tenSP']}</td>
                                     <td>".number_format($giaSP, 2)." VND</td>
+                                    <td>{$row['tenKho']}</td>
                                     <td>{$soLuong}</td>
                                     <td>{$row['ngayXuat']}</td>
                                       <td>".number_format($tongTien, 2)." VND</td>
@@ -122,7 +122,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                                 
                     } else {
                         echo "<tr>
-                                    <td colspan='6'>Không có dữ liệu</td>
+                                    <td colspan='7'>Không có dữ liệu</td>
                                 <tr>
                                     ";
                     }

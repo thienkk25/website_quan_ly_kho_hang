@@ -24,7 +24,7 @@
         ?>
             <form method="GET">
                 <select name="idKho" onchange="this.form.submit()"> 
-                    <option value="0" selected>Tất cả</option>
+                    <option value="null" selected>Tất cả</option>
                     <?php
                     $sqlKho = "SELECT * FROM kho";
                     $resultKho = mysqli_query($conn, $sqlKho);

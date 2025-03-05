@@ -6,9 +6,9 @@ include "../role.php";
 $search = "";
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
-    $sql = "SELECT * FROM sanpham WHERE tenSP LIKE '%$search%' OR id LIKE '%$search%'";
+    $sql = "SELECT * FROM nhacungcap WHERE tenNCC LIKE '%$search%' OR id LIKE '%$search%'";
 } else {
-    $sql = "SELECT * FROM sanpham";
+    $sql = "SELECT * FROM nhacungcap";
 }
 
 $result = mysqli_query($conn, $sql);
@@ -20,7 +20,7 @@ include "../role.php";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách sản phẩm</title>
+    <title>Danh sách nhà cung cấp</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
         table {
@@ -52,41 +52,37 @@ include "../role.php";
         </aside>
         <main class="main-content">
             <header>
-            <h2>Danh sách sản phẩm</h2>
+            <h2>Danh sách nhà cung cấp</h2>
                 <form method="GET" action="">
-                    <input type="text" name="search" placeholder="Nhập mã hoặc tên sản phẩm" value="<?php echo $search; ?>">
+                    <input type="text" name="search" placeholder="Nhập mã hoặc tên nhà cung cấp" value="<?php echo $search; ?>">
                     <button type="submit" style="margin-top: 10px;">Tìm kiếm</button>
                 </form>
                 <?php if($userRole['idVaiTro'] == 1){?>
-                    <a href="create_product.php"  name="add" ><button style="margin-top: 10px;">Thêm sản phẩm</button></a>
+                    <a href="create_supplier.php"  name="add" ><button style="margin-top: 10px;">Thêm nhà cung cấp</button></a>
                      <?php } ?>
             </header>
             <table>
                 <thead>
                     <tr>
-                        <th>Mã sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Mô tả sản phẩm</th>
-                        <th>Giá bán</th>
-                        <th>Ngày tạo</th>
+                        <th>Mã nhà cung cấp</th>
+                        <th>Tên nhà cung cấp</th>
+                        <th>Thông tin liên hệ</th>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>
                     <tr>
                         <td><?php echo $row['id'];  ?></td>
-                        <td><?php echo $row['tenSP'];  ?></td>
-                        <td><?php echo $row['motaSP'];  ?></td>
-                        <td><?php echo number_format($row['giaSP'], 2)  ?> VND</td>
-                        <td><?php echo $row['created_at'];  ?></td>
+                        <td><?php echo $row['tenNCC'];  ?></td>
+                        <td><?php echo $row['thongTinLienHe'];  ?></td>
                         <?php 
                             
                            if ($userRole['idVaiTro'] == 1){ ?>
                            <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
+                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_supplier.php?delete=<?php echo $row['id']; ?>">
                                 <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
                             </td>
                             <td>
-                            <a href="update_product.php?id=<?php echo $row['id']; ?>">
+                            <a href="update_supplier.php?id=<?php echo $row['id']; ?>">
                                 <button type="submit" class="btn btn-primary" name="add">Sửa</button>
                             </a>
                             </td>

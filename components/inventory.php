@@ -4,37 +4,46 @@
  include '../role.php';
 
 
-// Lấy dữ liệu tổng hợp từ bảng hangtonkho
-$sql_summary = "
-    SELECT 
-        SUM(htk.soLuong) AS tongSLTon, 
-        SUM(htk.soLuong * nk.giaNhap) AS tongVonTonKho, 
-        SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
-    FROM (((hangtonkho htk
-    LEFT JOIN sanpham sp ON htk.idSP = sp.id)
-    LEFT JOIN nhapkho nk ON htk.idSP = nk.idSP)
-    LEFT JOIN kho k ON htk.idKho = k.id) WHERE ".($userRole['idKho'] == null ? "1" : "htk.idKho='".$userRole['idKho']."'");
+ $idKhoFilter = isset($_GET['idKho']) && is_numeric($_GET['idKho']) ? intval($_GET['idKho']) : null;
 
-$result_summary = $conn->query($sql_summary);
-$summary = $result_summary->fetch_assoc();
+ // Lấy dữ liệu tổng hợp từ bảng hangtonkho
+ $sql_summary = "
+     SELECT 
+         SUM(htk.soLuong) AS tongSLTon, 
+         SUM(htk.soLuong * (SELECT AVG(nk.giaNhap) FROM nhapkho nk WHERE nk.idSP = htk.idSP AND nk.idKho = htk.idKho)) AS tongVonTonKho, 
+         SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
+     FROM hangtonkho htk
+     LEFT JOIN sanpham sp ON htk.idSP = sp.id
+     LEFT JOIN kho k ON htk.idKho = k.id
+     WHERE " . ($idKhoFilter !== null ? "htk.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "htk.idKho='" . $userRole['idKho'] . "'"));
+ 
+ $result_summary = $conn->query($sql_summary);
+ $summary = $result_summary->fetch_assoc();
+ 
+ // Lấy danh sách sản phẩm (có tìm kiếm & lọc theo idKho nếu có)
+ $search = isset($_GET['search']) ? $_GET['search'] : "";
+ $sql_products = "
+     SELECT 
+         sp.id AS maSP, 
+         sp.tenSP, 
+         IFNULL(k.tenKho, 'Không có') AS tenKho,
+         SUM(IFNULL(htk.soLuong, 0)) AS soLuongTon,
+         SUM(IFNULL(htk.soLuong, 0) * COALESCE(nk.giaNhap, 0)) AS vonTonKho,
+         SUM(IFNULL(htk.soLuong, 0) * IFNULL(sp.giaSP, 0)) AS giaTriTonKho
+     FROM sanpham sp
+     LEFT JOIN hangtonkho htk ON sp.id = htk.idSP
+     LEFT JOIN kho k ON htk.idKho = k.id
+     LEFT JOIN (
+         SELECT idSP, idKho, MAX(giaNhap) AS giaNhap  -- Chỉ lấy 1 giá nhập gần nhất
+         FROM nhapkho 
+         GROUP BY idSP, idKho
+     ) nk ON sp.id = nk.idSP AND nk.idKho = htk.idKho
+     WHERE " . ($idKhoFilter !== null ? "htk.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "htk.idKho='" . $userRole['idKho'] . "'")) . "
+     AND (sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%')
+     GROUP BY sp.id, sp.tenSP, k.tenKho;
+ ";
+ 
 
-// Lấy danh sách sản phẩm (có tìm kiếm)
-$search = isset($_GET['search']) ? $_GET['search'] : "";
-$sql_products = "
-    SELECT 
-        sp.id AS maSP, 
-        sp.tenSP, 
-        COALESCE(htk.soLuong, 0) AS soLuongTon,
-        COALESCE(htk.soLuong * nk.giaNhap, 0) AS vonTonKho,
-        COALESCE(htk.soLuong * sp.giaSP, 0) AS giaTriTonKho
-    FROM (((sanpham sp
-    LEFT JOIN hangtonkho htk ON sp.id = htk.idSP)
-    LEFT JOIN nhapkho nk ON sp.id = nk.idSP)
-    LEFT JOIN kho k ON htk.idKho = k.id)
-    WHERE (" . ($userRole['idKho'] == null ? "1" : "htk.idKho = '" . $userRole['idKho'] . "'") . ")
-    AND (sp.tenSP LIKE '%$search%' OR sp.id LIKE '%$search%')
-    GROUP BY sp.id, sp.tenSP, sp.giaSP, htk.soLuong;
-";
 
 $result_products = $conn->query($sql_products);
 ?>
@@ -221,6 +230,7 @@ $result_products = $conn->query($sql_products);
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
                         <th>Số lượng tồn</th>
+                        <th>Tên kho</th>
                         <th>Vốn tồn kho</th>
                         <th>Giá trị tồn</th>
                     </tr>
@@ -231,6 +241,7 @@ $result_products = $conn->query($sql_products);
                             <td><?= $row['maSP'] ?></td>
                             <td><?= $row['tenSP'] ?></td>
                             <td><?= number_format($row['soLuongTon']) ?></td>
+                            <td><?= $row['tenKho'] ?></td>
                             <td><?= number_format($row['vonTonKho'], 2) ?> VND</td>
                             <td><?= number_format($row['giaTriTonKho'], 2) ?> VND</td>
                         </tr>
