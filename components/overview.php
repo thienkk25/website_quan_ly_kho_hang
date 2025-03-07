@@ -7,10 +7,13 @@
     // Lấy dữ liệu tổng hợp từ bảng hangtonkho
     $sql_summary = "
     SELECT 
-        SUM(htk.soLuong) AS tongSLTon    
+        SUM(htk.soLuong) AS tongSLTon, 
+        SUM(htk.soLuong * (SELECT AVG(nk.giaNhap) FROM nhapkho nk WHERE nk.idSP = htk.idSP AND nk.idKho = htk.idKho)) AS tongVonTonKho, 
+        SUM(htk.soLuong * sp.giaSP) AS tongGiaTriTonKho
     FROM hangtonkho htk
     LEFT JOIN sanpham sp ON htk.idSP = sp.id
-    LEFT JOIN kho k ON htk.idKho = k.id WHERE " . ($idKhoFilter !== null ? "htk.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "htk.idKho='" . $userRole['idKho'] . "'"));
+    LEFT JOIN kho k ON htk.idKho = k.id
+    WHERE " . ($idKhoFilter !== null ? "htk.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "htk.idKho='" . $userRole['idKho'] . "'"));
 
     $result_summary = $conn->query($sql_summary);
     $summary = $result_summary->fetch_assoc();
@@ -20,12 +23,12 @@
 </header>
 <div class="stats">
     <div class="stat-card green">
-        <h2></h2>
-        <p></p>
+        <h2>Tổng vốn tồn kho</h2>
+        <p><?= number_format($summary['tongVonTonKho']) ?> VND</p>
     </div>
     <div class="stat-card blue">
-        <h2></h2>
-        <p></p>
+        <h2>Tổng giá trị tồn</h2>
+        <p><?= number_format($summary['tongGiaTriTonKho']) ?> VND</p>
     </div>
     <div class="stat-card red">
         <h2>Số sản phẩm</h2>

@@ -26,7 +26,7 @@
      SELECT 
          sp.id AS maSP, 
          sp.tenSP, 
-         IFNULL(k.tenKho, 'Không có') AS tenKho,
+         IFNULL(k.tenKho, ' ----- ') AS tenKho,
          SUM(IFNULL(htk.soLuong, 0)) AS soLuongTon,
          SUM(IFNULL(htk.soLuong, 0) * COALESCE(nk.giaNhap, 0)) AS vonTonKho,
          SUM(IFNULL(htk.soLuong, 0) * IFNULL(sp.giaSP, 0)) AS giaTriTonKho

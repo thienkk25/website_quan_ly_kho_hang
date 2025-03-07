@@ -7,7 +7,7 @@
     $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : "";
     $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : "";
     $idKhoFilter = isset($_GET['idKho']) && is_numeric($_GET['idKho']) ? intval($_GET['idKho']) : null;
-    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, kho.tenKho, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap, kho.id as idKho, sanpham.id as idSP
+    $sql = "SELECT nhapkho.id, sanpham.tenSP, nhacungcap.tenNCC, kho.tenKho, nhapkho.soLuong, nhapkho.giaNhap, nhapkho.ngayNhap, kho.id as idKho, sanpham.id as idSP, sanpham.giaSP as giaSP
             FROM (((nhapkho 
             INNER JOIN sanpham ON nhapkho.idSP = sanpham.id) 
             INNER JOIN nhacungcap ON nhacungcap.id = nhapkho.idNCC)
@@ -97,8 +97,9 @@
                         <th>Tên nhà cung cấp</th>
                         <th>Tên kho</th>
                         <th>Số lượng</th>
-                        <th>Giá Nhập</th>
-                        <th>Ngày Nhập</th>
+                        <th>Giá nhập</th>
+                        <th>Giá sản phẩm</th>
+                        <th>Ngày nhập</th>
                         <th>Tổng tiền</th>
                     </tr>
                 </thead>
@@ -118,6 +119,7 @@
                                     <td>{$row['tenKho']}</td>
                                     <td>{$soLuong}</td>
                                     <td>".number_format($giaNhap, 2)." VND</td>
+                                    <td>".number_format($row['giaSP'], 2)." VND</td>
                                     <td>{$row['ngayNhap']}</td>
                                     <td>".number_format($tongTien, 2)." VND</td>
                                     <td>
@@ -141,7 +143,7 @@
                                 
                     } else {
                         echo "<tr>
-                                    <td colspan='7'>Không có dữ liệu</td>
+                                    <td colspan='8'>Không có dữ liệu</td>
                                 <tr>
                                     ";
                     }
