@@ -82,6 +82,23 @@
                     <input type="date" name="date_from">
                     <span>đến</span>
                     <input type="date" name="date_to">
+                    <?php
+                    if ($userRole['idVaiTro'] == 1):
+                    ?>
+                        <select name="idKho" style="margin: 5px 0"> 
+                            <option value="null" selected>Tất cả</option>
+                            <?php
+                            $sqlKho = "SELECT * FROM kho";
+                            $resultKho = mysqli_query($conn, $sqlKho);
+                            while ($row = mysqli_fetch_assoc($resultKho)): 
+                                $selected = (isset($_GET['idKho']) && $_GET['idKho'] == $row['id']) ? 'selected' : '';
+                            ?>
+                                <option value="<?= $row['id'] ?>" <?= $selected ?>><?= $row['tenKho']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    <?php
+                    endif;
+                    ?>
                     <button type="submit">Tìm kiếm</button>
                 </form>
                 

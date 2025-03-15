@@ -18,6 +18,9 @@ $sql = "SELECT xuatkho.id, sanpham.tenSP, xuatkho.soLuong, sanpham.giaSP, xuatkh
 if (!empty($search)) {
     $sql .= " AND (xuatkho.id LIKE '%$search%' OR sanpham.tenSP LIKE '%$search%')";
 }
+if($date_from > $date_to ){
+    echo "<script>alert('Lỗi ngày nhập!'); window.history.back();</script>";
+}
 
 // Thêm điều kiện lọc theo ngày xuat
 if (!empty($date_from) && !empty($date_to)) {
@@ -80,6 +83,23 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                     <input type="date" name="date_from">
                     <span>đến</span>
                     <input type="date" name="date_to">
+                    <?php
+                    if ($userRole['idVaiTro'] == 1):
+                    ?>
+                        <select name="idKho" style="margin: 5px 0"> 
+                            <option value="null" selected>Tất cả</option>
+                            <?php
+                            $sqlKho = "SELECT * FROM kho";
+                            $resultKho = mysqli_query($conn, $sqlKho);
+                            while ($row = mysqli_fetch_assoc($resultKho)): 
+                                $selected = (isset($_GET['idKho']) && $_GET['idKho'] == $row['id']) ? 'selected' : '';
+                            ?>
+                                <option value="<?= $row['id'] ?>" <?= $selected ?>><?= $row['tenKho']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    <?php
+                    endif;
+                    ?>
                     <button type="submit">Tìm kiếm</button>
                 </form>
                 <a href="create_warehouse_export.php"
