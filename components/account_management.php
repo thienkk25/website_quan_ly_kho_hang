@@ -2,6 +2,12 @@
 session_start();
 include '../connection.php';
 include "../role.php";
+
+if($userRole['idVaiTro'] != 1){
+    echo "<script>alert('Bạn không có quyền truy cập!'); window.history.back();</script>";
+    exit;
+}
+
 // Xử lý tìm kiếm
 $search = "";
 if (isset($_GET['search'])) {
