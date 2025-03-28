@@ -15,6 +15,13 @@ include "../role.php";
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tenNCC = $_POST['tenNCC'];
+
+            $checkNameNCC = $conn -> query("SELECT COUNT(*) FROM nhacungcap WHERE tenNCC='".$tenNCC."'");
+            if($checkNameNCC->num_rows > 0){
+                echo "<script>alert('Đã tồn tại tên nhà cung cấp'); window.history.back();</script>";
+                exit;
+            }
+
             $thongTinLienHe = $_POST['thongTinLienHe'];
             if($conn -> query("INSERT INTO nhacungcap (tenNCC, thongTinLienHe) VALUES (N'$tenNCC', N'$thongTinLienHe')")){
                 echo header('Location: supplier.php');

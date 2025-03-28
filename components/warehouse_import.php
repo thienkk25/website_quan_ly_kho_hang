@@ -117,6 +117,7 @@
                         <th>Giá nhập</th>
                         <th>Giá sản phẩm</th>
                         <th>Ngày nhập</th>
+                        <th>Giờ nhập</th>
                         <th>Tổng tiền</th>
                     </tr>
                 </thead>
@@ -137,7 +138,8 @@
                                     <td>{$soLuong}</td>
                                     <td>".number_format($giaNhap, 2)." VND</td>
                                     <td>".number_format($row['giaSP'], 2)." VND</td>
-                                    <td>{$row['ngayNhap']}</td>
+                                    <td>".date("d/m/Y",strtotime($row['ngayNhap']))."</td>
+                                    <td>".date("h:i:s",strtotime($row['ngayNhap']))."</td>
                                     <td>".number_format($tongTien, 2)." VND</td>
                                     <td>
                                         <form method='GET' action='update_warehouse_import.php'>
