@@ -5,6 +5,24 @@ Nhóm 5
 
 [Xem tài liệu PDF](./Phân%20tích%20thiết%20kế%20hệ%20thống%20quản%20lý%20kho.pdf)
 
+## Thành phần dự án
+### Các chức năng
+
+    - Đăng nhập admin.
+    - Quản lý sản phẩm( Thêm, sửa, xoá, tìm kiếm).
+    - Quản lý nhập kho (Tạo phiếu nhập, sửa thông tin nhập, xoá: - nhà cung cấp, số lượng, giá nhập, ngày nhập, v.v).
+    - Quản lý xuất kho( Thêm phiếu xuất kho: Ghi nhận thông tin sản phẩm bán hoặc chuyển kho, Kiểm soát xuất kho: Đảm bảo số lượng xuất không vượt quá tồn kho.).
+    - Quản lý tồn kho ( Hiển thị số lượng hiện có của từng sản phẩm / Xuất báo cáo về tình trạng tồn kho).
+    - Nhà cung cấp, Tài khoản, Vai trò.
+
+### Phân công
+
+    - Thiện: Thiết kế hệ thống tổng thể, bao gồm kiến trúc cơ sơ dữ liệu, xây dựng giao diện và chức năng nhập kho, quản lý nhà cung cấp (thêm, sửa, xoá, tìm kiếm), quản lý tài khoản(tạo, sửa, xoá), hỗ trợ, làm powerpoint.
+    - Dương: Xây dựng giao diện và chức năng quản lý sản phẩm (thêm, sửa, xoá, tìm kiếm), trình bày powerpoint.
+    - Phúc: Xây dựng giao diện và chức năng xuất kho (Tạo phiếu, kiểm tra và khi nhận thông tin sản phẩm).
+    - Quý: Xây dựng giao diện quản lý tồn kho và chức năng.
+    - Nhất: Xây dựng giao diện đăng nhập và phân quyền.
+
 ## Cơ sở dữ liệu
 1. Bảng quản lý tài khoản
 
