@@ -1,4 +1,5 @@
-# website_quan_ly_kho_hang
+# Website quản lý kho hàng
+
 Nhóm 5
 
 ## File PDF phân tích thiết kế hệ thống quản lý kho tổng quát
@@ -108,4 +109,4 @@ Nhóm 5
     diaChi TEXT NOT NULL
     );`
 
-
+**Chú ý:** *Sản phẩm dành cho học tập*
