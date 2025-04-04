@@ -194,13 +194,28 @@ $result_products = $conn->query($sql_products);
         </aside>
         <main class="main-content">
             <?php include "../top_header_main.php" ?>
-            <div class="header">
-                <h2>Quản lý kho</h2>
-                <form method="GET" action="">
-                    <input type="text" name="search" placeholder="Nhập mã sản phẩm hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
-                    <button type="submit">Tìm kiếm</button>
-                </form>
-            </div>
+            <h2>Danh sách tồn kho</h2>
+            <form method="GET" action="">
+                <input type="text" name="search" placeholder="Nhập mã sản phẩm hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
+                <?php
+                if ($userRole['idVaiTro'] == 1):
+                ?>
+                    <select name="idKho" style="margin: 5px 0"> 
+                        <option value="null" selected>Tất cả</option>
+                        <?php
+                        $sqlKho = "SELECT * FROM kho";
+                        $resultKho = mysqli_query($conn, $sqlKho);
+                        while ($row = mysqli_fetch_assoc($resultKho)): 
+                            $selected = (isset($_GET['idKho']) && $_GET['idKho'] == $row['id']) ? 'selected' : '';
+                        ?>
+                            <option value="<?= $row['id'] ?>" <?= $selected ?>><?= $row['tenKho']; ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                <?php
+                endif;
+                ?>
+                <button type="submit">Tìm kiếm</button>
+            </form>
             <div id="summary">
                 <div id="box">
                     <p>Ngày hôm nay</p>

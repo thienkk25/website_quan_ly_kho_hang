@@ -76,6 +76,7 @@ include "../role.php";
                         <th>Vai trò</th>
                         <th>Quản lý kho</th>
                         <th>Ngày tạo</th>
+                        <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>

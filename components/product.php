@@ -68,6 +68,7 @@ include "../role.php";
                         <th>Tên sản phẩm</th>
                         <th>Mô tả sản phẩm</th>
                         <th>Giá bán</th>
+                        <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>
@@ -78,17 +79,18 @@ include "../role.php";
                         <td><?php echo number_format($row['giaSP'], 2)  ?> VND</td>
                         <?php 
                             
-                           if ($userRole['idVaiTro'] == 1){ ?>
+                           if ($userRole['idVaiTro'] == 1): ?>
                            <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
-                            </td>
-                            <td>
                             <a href="update_product.php?id=<?php echo $row['id']; ?>">
                                 <button type="submit" class="btn btn-primary" name="add">Sửa</button>
                             </a>
                             </td>
-                             <?php }
+                           <td>
+                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
+                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                            </td>
+                            
+                             <?php endif;
                              ?>
                         
                     </tr>

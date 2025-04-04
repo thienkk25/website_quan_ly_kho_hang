@@ -67,6 +67,7 @@ include "../role.php";
                         <th>Mã nhà cung cấp</th>
                         <th>Tên nhà cung cấp</th>
                         <th>Thông tin liên hệ</th>
+                        <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>
@@ -76,17 +77,18 @@ include "../role.php";
                         <td><?php echo $row['thongTinLienHe'];  ?></td>
                         <?php 
                             
-                           if ($userRole['idVaiTro'] == 1){ ?>
+                           if ($userRole['idVaiTro'] == 1): ?>
                            <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_supplier.php?delete=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
-                            </td>
-                            <td>
                             <a href="update_supplier.php?id=<?php echo $row['id']; ?>">
                                 <button type="submit" class="btn btn-primary" name="add">Sửa</button>
                             </a>
                             </td>
-                             <?php }
+                           <td>
+                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_supplier.php?delete=<?php echo $row['id']; ?>">
+                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                            </td>
+                            
+                             <?php endif;
                              ?>
                         
                     </tr>

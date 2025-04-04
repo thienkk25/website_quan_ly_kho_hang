@@ -15,6 +15,13 @@ include "../role.php";
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tenKho = $_POST['tenKho'];
+
+            $checkTenKho = $conn -> query("SELECT COUNT(*) FROM kho WHERE tenKho='".$tenKho."'");
+            if($checkTenKho->num_rows > 0){
+                echo "<script>alert('Đã tồn tại tên kho'); window.history.back();</script>";
+                exit;
+            }
+
             $diaChi = $_POST['diaChi'];
             if($conn -> query("INSERT INTO kho (tenKho, diaChi) VALUES (N'$tenKho', N'$diaChi')")){
                 echo header('Location: warehouse.php');

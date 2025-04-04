@@ -80,9 +80,10 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
             <form method="GET" action="">
                     <input type="text" name="search" placeholder="Nhập mã phiếu xuất hoặc tên sản phẩm để tìm kiếm" value="<?php echo $search; ?>">
                     <span>Từ</span>
-                    <input type="date" name="date_from">
+                    <input type="date" name="date_from" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s; margin: 0 10px;color: blue">
                     <span>đến</span>
-                    <input type="date" name="date_to">
+                    <input type="date" name="date_to" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s; margin-left: 10px;color: blue">
+
                     <?php
                     if ($userRole['idVaiTro'] == 1):
                     ?>
@@ -100,7 +101,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                     <?php
                     endif;
                     ?>
-                    <button type="submit">Tìm kiếm</button>
+                    <button type="submit" style="margin-bottom:5px">Tìm kiếm</button>
                 </form>
                 <a href="create_warehouse_export.php"
                     ><button>Xuất
@@ -156,7 +157,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                         $sql_total = "SELECT SUM(xuatkho.soLuong * sanpham.giaSP) AS tongTienTK 
                                         FROM ((xuatkho 
                                         INNER JOIN sanpham ON xuatkho.idSP = sanpham.id)
-                                        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE ".($userRole['idKho'] == null ? "1" : "idKho='".$userRole['idKho']."'");
+                                        INNER JOIN kho ON kho.id = xuatkho.idKho) WHERE " . ($idKhoFilter !== null ? "xuatkho.idKho = $idKhoFilter" : ($userRole['idKho'] === null ? "1" : "xuatkho.idKho='" . $userRole['idKho'] . "'"));
 
                         if (!empty($search)) {
                             $sql_total .= " AND (xuatkho.id LIKE '%$search%' OR sanpham.tenSP LIKE '%$search%')";

@@ -73,6 +73,7 @@ include "../role.php";
                         <th>Mã kho</th>
                         <th>Tên kho</th>
                         <th>Địa chỉ</th>
+                        <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>
@@ -82,17 +83,19 @@ include "../role.php";
                         <td><?php echo $row['diaChi'];  ?></td>
                         <?php 
                             
-                           if ($userRole['idVaiTro'] == 1){ ?>
+                           if ($userRole['idVaiTro'] == 1): ?>
                            <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_warehouse.php?delete=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                                <a href="update_warehouse.php?id=<?php echo $row['id']; ?>">
+                                    <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                                </a>
                             </td>
-                            <td>
-                            <a href="update_warehouse.php?id=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Sửa</button>
-                            </a>
+                           <td>
+                                <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_warehouse.php?delete=<?php echo $row['id']; ?>">
+                                    <button type="submit" class="btn btn-primary" name="add">Xóa</button>
+                                </a>
                             </td>
-                             <?php }
+                            
+                             <?php endif;
                              ?>
                         
                     </tr>
