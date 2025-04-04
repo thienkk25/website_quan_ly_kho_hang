@@ -67,7 +67,10 @@ include "../role.php";
                         <th>Mã nhà cung cấp</th>
                         <th>Tên nhà cung cấp</th>
                         <th>Thông tin liên hệ</th>
+                        <?php 
+                        if ($userRole['idVaiTro'] == 1): ?>
                         <th colspan="2">Chức năng</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <?php while($row = mysqli_fetch_assoc($result)):    ?>

@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <select name="idSP">
                                     <?php 
                                         while ($row = $resultSP->fetch_assoc()) {
-                                            echo "<option value=".$row['id'].">".$row['tenSP']." - ".$row['giaSP']." VND</option>";
+                                            echo "<option value=".$row['id'].">".$row['tenSP']." - Giá bán: ".$row['giaSP']." VND</option>";
                                         }
                                     ?>
                                 </select>

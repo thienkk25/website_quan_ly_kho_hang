@@ -103,13 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ?>
                     <label>Sản phẩm</label>
                     <?php 
-                             $sqlSP = "SELECT * FROM sanpham";
+                             $sqlSP = "SELECT sp.id as id, sp.tenSP as tenSP, htk.soLuong as soLuong FROM sanpham sp INNER JOIN hangtonkho htk ON sp.id = htk.idSP";
                              $resultSP = $conn->query($sqlSP);
                              if ($resultSP->num_rows > 0) { ?>
                                 <select name="idSP">
                                     <?php 
                                         while ($row = $resultSP->fetch_assoc()) {
-                                            echo "<option value=".$row['id'].">".$row['tenSP']."</option>";
+                                            echo "<option value=".$row['id'].">".$row['tenSP']." - Hiện tại còn: ".$row['soLuong']."</option>";
                                         }
                                     ?>
                                 </select>
