@@ -214,7 +214,7 @@ $result_products = $conn->query($sql_products);
                 <?php
                 endif;
                 ?>
-                <button type="submit">Tìm kiếm</button>
+                <button type="submit" style="margin: 5px 0 15px 0;">Tìm kiếm</button>
             </form>
             <div id="summary">
                 <div id="box">
