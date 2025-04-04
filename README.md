@@ -4,7 +4,7 @@ Nhóm 5
 
 ## File PDF phân tích thiết kế hệ thống quản lý kho tổng quát
 
-[Xem tài liệu PDF](./Phân%20tích%20thiết%20kế%20hệ%20thống%20quản%20lý%20kho.pdf)
+[Xem tài liệu PDF](./Phân%20tích%20thiết%20kế%20hệ%20thống%20quản%20lý%20kho%20hàng.pdf)
 
 ## Thành phần dự án
 ### Các chức năng
