@@ -19,16 +19,15 @@ if (isset($_POST['login']) && $_POST['username'] != '' && $_POST['password'] != 
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
         
-        // So sánh mật khẩu nhập với mật khẩu đã mã hoá trong CSDL
         if (password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];
             header('location: index.php');
             exit();
         } else {
-            echo "<script>alert('Sai mật khẩu');</script>";
+            echo "<script>alert('Tài khoản hoặc mật khẩu không chính xác');</script>";
         }
     } else {
-        echo "<script>alert('Tên tài khoản không tồn tại');</script>";
+        echo "<script>alert('Tài khoản hoặc mật khẩu không chính xác');</script>";
     }
 
     $stmt->close();
