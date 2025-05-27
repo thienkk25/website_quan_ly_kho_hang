@@ -47,7 +47,7 @@ include "../role.php";
 </head>
 <body>
 <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
@@ -62,43 +62,49 @@ include "../role.php";
                      <?php } ?>
             </header>
             <table>
-                <thead>
-                    <tr>
-                        <th>Mã sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Mô tả sản phẩm</th>
-                        <th>Giá bán</th>
-                        <?php 
-                        if ($userRole['idVaiTro'] == 1): ?>
+            <thead>
+                <tr>
+                    <th>Mã sản phẩm</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Mô tả sản phẩm</th>
+                    <th>Giá bán</th>
+                    <?php if ($userRole['idVaiTro'] == 1): ?>
                         <th colspan="2">Chức năng</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <?php while($row = mysqli_fetch_assoc($result)):    ?>
+                    <?php endif; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (mysqli_num_rows($result) > 0): ?>
+                    <?php while($row = mysqli_fetch_assoc($result)): ?>
+                        <tr>
+                            <td><?php echo $row['id']; ?></td>
+                            <td><?php echo $row['tenSP']; ?></td>
+                            <td><?php echo $row['motaSP']; ?></td>
+                            <td><?php echo number_format($row['giaSP'], 2); ?> VND</td>
+                            <?php if ($userRole['idVaiTro'] == 1): ?>
+                                <td>
+                                    <a href="update_product.php?id=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a onclick="return confirm('Bạn có muốn xóa không!');" href="delete_product.php?delete=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Xóa</button>
+                                    </a>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
                     <tr>
-                        <td><?php echo $row['id'];  ?></td>
-                        <td><?php echo $row['tenSP'];  ?></td>
-                        <td><?php echo $row['motaSP'];  ?></td>
-                        <td><?php echo number_format($row['giaSP'], 2)  ?> VND</td>
-                        <?php 
-                            
-                           if ($userRole['idVaiTro'] == 1): ?>
-                           <td>
-                            <a href="update_product.php?id=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Sửa</button>
-                            </a>
-                            </td>
-                           <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_product.php?delete=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
-                            </td>
-                            
-                             <?php endif;
-                             ?>
-                        
+                        <td colspan="<?php echo ($userRole['idVaiTro'] == 1) ? 6 : 4; ?>" style="text-align: center;">
+                            Không có dữ liệu
+                        </td>
                     </tr>
-                <?php endwhile; ?>
-            </table>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
         </main>
 </body>
         

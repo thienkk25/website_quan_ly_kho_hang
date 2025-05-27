@@ -73,29 +73,37 @@ include "../role.php";
                         <?php endif; ?>
                     </tr>
                 </thead>
-                <?php while($row = mysqli_fetch_assoc($result)):    ?>
-                    <tr>
-                        <td><?php echo $row['id'];  ?></td>
-                        <td><?php echo $row['tenNCC'];  ?></td>
-                        <td><?php echo $row['thongTinLienHe'];  ?></td>
-                        <?php 
-                            
-                           if ($userRole['idVaiTro'] == 1): ?>
-                           <td>
-                            <a href="update_supplier.php?id=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Sửa</button>
-                            </a>
+                    <?php if (mysqli_num_rows($result) > 0): ?>
+                        <?php while($row = mysqli_fetch_assoc($result)):    ?>
+                            <tr>
+                                <td><?php echo $row['id'];  ?></td>
+                                <td><?php echo $row['tenNCC'];  ?></td>
+                                <td><?php echo $row['thongTinLienHe'];  ?></td>
+                                <?php 
+                                    
+                                if ($userRole['idVaiTro'] == 1): ?>
+                                <td>
+                                    <a href="update_supplier.php?id=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                                    </a>
+                                    </td>
+                                <td>
+                                    <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_supplier.php?delete=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
+                                    </td>
+                                    
+                                    <?php endif;
+                                    ?>
+                                
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" style="text-align: center;">
+                                Không có dữ liệu
                             </td>
-                           <td>
-                            <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_supplier.php?delete=<?php echo $row['id']; ?>">
-                                <button type="submit" class="btn btn-primary" name="add">Xóa</button></a>
-                            </td>
-                            
-                             <?php endif;
-                             ?>
-                        
-                    </tr>
-                <?php endwhile; ?>
+                        </tr>
+                    <?php endif; ?>
             </table>
         </main>
 </body>

@@ -70,7 +70,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
@@ -143,7 +143,7 @@ $sql .= " ORDER BY xuatkho.id"; // Sắp xếp theo id tăng dần, mặc địn
                                 
                     } else {
                         echo "<tr>
-                                    <td colspan='7'>Không có dữ liệu</td>
+                                    <td colspan='7' style='text-align: center;'>Không có dữ liệu</td>
                                 <tr>
                                     ";
                     }

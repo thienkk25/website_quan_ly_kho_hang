@@ -78,33 +78,41 @@ include "../role.php";
                         <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
-                <?php while($row = mysqli_fetch_assoc($result)):    ?>
-                    <tr>
-                        <td><?php echo $row['id'];  ?></td>
-                        <td><?php echo $row['username'];  ?></td>
-                        <td><?php echo $row['tenVaiTro'];  ?></td>
-                        <td><?php echo $row['tenKho'];  ?></td>
-                        <td><?php echo $row['created_at'];  ?></td>
-                        <?php 
-                            
-                           if ($userRole['idVaiTro'] == 1){ ?>
-                            <td>
-                                <form method='GET' action='update_account_management.php'>
-                                    <input type='hidden' name='id' value="<?= $row['id'] ?>">
-                                    <button type='submit'>Sửa</button>
-                                </form>
+                    <?php if (mysqli_num_rows($result) > 0): ?>
+                        <?php while($row = mysqli_fetch_assoc($result)):    ?>
+                            <tr>
+                                <td><?php echo $row['id'];  ?></td>
+                                <td><?php echo $row['username'];  ?></td>
+                                <td><?php echo $row['tenVaiTro'];  ?></td>
+                                <td><?php echo $row['tenKho'];  ?></td>
+                                <td><?php echo $row['created_at'];  ?></td>
+                                <?php 
+                                    
+                                if ($userRole['idVaiTro'] == 1){ ?>
+                                    <td>
+                                        <form method='GET' action='update_account_management.php'>
+                                            <input type='hidden' name='id' value="<?= $row['id'] ?>">
+                                            <button type='submit'>Sửa</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form id="deleteForm<?= $row['id'] ?>" method='POST' action='delete_account_management.php'>
+                                            <input type='hidden' name='id' value="<?= $row['id'] ?>">
+                                        </form>
+                                        <button onclick="confirmDelete(<?= $row['id'] ?>)">Xoá</button>
+                                    </td>
+                                    <?php }
+                                    ?>
+                                
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center;">
+                                Không có dữ liệu
                             </td>
-                            <td>
-                                <form id="deleteForm<?= $row['id'] ?>" method='POST' action='delete_account_management.php'>
-                                    <input type='hidden' name='id' value="<?= $row['id'] ?>">
-                                </form>
-                                <button onclick="confirmDelete(<?= $row['id'] ?>)">Xoá</button>
-                            </td>
-                             <?php }
-                             ?>
-                        
-                    </tr>
-                <?php endwhile; ?>
+                        </tr>
+                    <?php endif; ?>
             </table>
         </main>
     <script>

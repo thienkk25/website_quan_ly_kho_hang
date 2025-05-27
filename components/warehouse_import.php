@@ -69,7 +69,7 @@
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
@@ -162,7 +162,7 @@
                                 
                     } else {
                         echo "<tr>
-                                    <td colspan='8'>Không có dữ liệu</td>
+                                    <td colspan='10' style='text-align: center;'>Không có dữ liệu</td>
                                 <tr>
                                     ";
                     }

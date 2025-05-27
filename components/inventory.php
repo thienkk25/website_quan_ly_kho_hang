@@ -189,7 +189,7 @@ $result_products = $conn->query($sql_products);
 </head>
 <body>
 <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
@@ -251,8 +251,9 @@ $result_products = $conn->query($sql_products);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = $result_products->fetch_assoc()): ?>
-                        <tr>
+                    <?php if (mysqli_num_rows($result_products) > 0): ?>
+                        <?php while($row = mysqli_fetch_assoc($result_products)): ?>
+                            <tr>
                             <td><?= $row['maSP'] ?></td>
                             <td><?= $row['tenSP'] ?></td>
                             <td><?= number_format($row['soLuongTon']) ?></td>
@@ -260,7 +261,14 @@ $result_products = $conn->query($sql_products);
                             <td><?= number_format($row['vonTonKho'], 2) ?> VND</td>
                             <td><?= number_format($row['giaTriTonKho'], 2) ?> VND</td>
                         </tr>
-                    <?php endwhile; ?>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center;">
+                                Không có dữ liệu
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </main>

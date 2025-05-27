@@ -76,30 +76,38 @@ include "../role.php";
                         <th colspan="2">Chức năng</th>
                     </tr>
                 </thead>
-                <?php while($row = mysqli_fetch_assoc($result)):    ?>
-                    <tr>
-                        <td><?php echo $row['id'];  ?></td>
-                        <td><?php echo $row['tenKho'];  ?></td>
-                        <td><?php echo $row['diaChi'];  ?></td>
-                        <?php 
+                <?php if (mysqli_num_rows($result) > 0): ?>
+                    <?php while($row = mysqli_fetch_assoc($result)):    ?>
+                        <tr>
+                            <td><?php echo $row['id'];  ?></td>
+                            <td><?php echo $row['tenKho'];  ?></td>
+                            <td><?php echo $row['diaChi'];  ?></td>
+                            <?php 
+                                
+                            if ($userRole['idVaiTro'] == 1): ?>
+                            <td>
+                                    <a href="update_warehouse.php?id=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Sửa</button>
+                                    </a>
+                                </td>
+                            <td>
+                                    <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_warehouse.php?delete=<?php echo $row['id']; ?>">
+                                        <button type="submit" class="btn btn-primary" name="add">Xóa</button>
+                                    </a>
+                                </td>
+                                
+                                <?php endif;
+                                ?>
                             
-                           if ($userRole['idVaiTro'] == 1): ?>
-                           <td>
-                                <a href="update_warehouse.php?id=<?php echo $row['id']; ?>">
-                                    <button type="submit" class="btn btn-primary" name="add">Sửa</button>
-                                </a>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                        <tr>
+                            <td colspan="4" style="text-align: center;">
+                                Không có dữ liệu
                             </td>
-                           <td>
-                                <a onclick="return confirm('Bạn có muốn xóa không!');"; href="delete_warehouse.php?delete=<?php echo $row['id']; ?>">
-                                    <button type="submit" class="btn btn-primary" name="add">Xóa</button>
-                                </a>
-                            </td>
-                            
-                             <?php endif;
-                             ?>
-                        
-                    </tr>
-                <?php endwhile; ?>
+                        </tr>
+                    <?php endif; ?>
             </table>
         </main>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
