@@ -1,35 +1,38 @@
 <?php
-    session_start();
-    if (isset($_SESSION['username'])) {
-        header('location: index.php');
-    }
-    include 'connection.php';
+session_start();
+if (isset($_SESSION['username'])) {
+    header('location: index.php');
+    exit();
+}
 
-    // Check if form is submitted and required fields are filled
-    if( isset($_POST['login']) && $_POST['username'] != '' && $_POST['password'] != '' ) {
-        // Retrieve the username and password from the form
-        $username = $_POST['username']; 
-        $password = $_POST['password'];
+include 'connection.php';
 
-        // Sanitize the inputs to prevent SQL injection
-        $username = mysqli_real_escape_string($conn, $username);
-        $password = mysqli_real_escape_string($conn, $password);
+if (isset($_POST['login']) && $_POST['username'] != '' && $_POST['password'] != '') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-        // Query to check if the user exists by username and password
-        $sql = "SELECT * FROM taikhoan WHERE username = '$username' AND password = '$password'";
-        $result = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare("SELECT * FROM taikhoan WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        // Check if credentials match
-        if (mysqli_num_rows($result) > 0) {
-            $user = mysqli_fetch_assoc($result);
-            // If credentials match, redirect to the main page
+    if ($result && $result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        
+        // So sánh mật khẩu nhập với mật khẩu đã mã hoá trong CSDL
+        if (password_verify($password, $user['password'])) {
             $_SESSION['username'] = $user['username'];
             header('location: index.php');
+            exit();
         } else {
-            // If credentials don't match, show error message
-            echo "<script>alert('Thông tin tài khoản hoặc mật khẩu không chính xác')</script>";
+            echo "<script>alert('Sai mật khẩu');</script>";
         }
+    } else {
+        echo "<script>alert('Tên tài khoản không tồn tại');</script>";
     }
+
+    $stmt->close();
+}
 ?>
 
 

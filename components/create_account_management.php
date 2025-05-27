@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare($sql);
     
     if ($stmt) {
-        $stmt->bind_param("ssii", $username, $password, $idVaiTro, $idKho);
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt->bind_param("ssii", $username, $hashedPassword, $idVaiTro, $idKho);
         
         if ($stmt->execute()) {
             echo "<script>alert('Thêm tài khoản thành công!');</script>";
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">

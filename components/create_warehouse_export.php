@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">

@@ -15,7 +15,7 @@ include "role.php";
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "sidebar.php" ?>
         </aside>
         <main class="main-content">

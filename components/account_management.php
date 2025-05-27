@@ -53,7 +53,7 @@ include "../role.php";
 </head>
 <body>
 <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" style="height: 100vh;">
             <?php include "../sidebar.php" ?>
         </aside>
         <main class="main-content">
@@ -72,7 +72,6 @@ include "../role.php";
                     <tr>
                         <th>Mã tài khoản</th>
                         <th>Tên tài khoản</th>
-                        <th>Mật khẩu</th>
                         <th>Vai trò</th>
                         <th>Quản lý kho</th>
                         <th>Ngày tạo</th>
@@ -83,7 +82,6 @@ include "../role.php";
                     <tr>
                         <td><?php echo $row['id'];  ?></td>
                         <td><?php echo $row['username'];  ?></td>
-                        <td><?php echo $row['password'];  ?></td>
                         <td><?php echo $row['tenVaiTro'];  ?></td>
                         <td><?php echo $row['tenKho'];  ?></td>
                         <td><?php echo $row['created_at'];  ?></td>

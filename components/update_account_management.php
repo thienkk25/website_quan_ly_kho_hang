@@ -43,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare($sql_update);
     if ($stmt) {
         if (!empty($password)) {
-            $stmt->bind_param("ssiii", $username, $password, $idVaiTro, $idKho, $id);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt->bind_param("ssiii", $username, $hashedPassword, $idVaiTro, $idKho, $id);
         } else {
             $stmt->bind_param("siii", $username, $idVaiTro, $idKho, $id);
         }
