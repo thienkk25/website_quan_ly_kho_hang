@@ -133,7 +133,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <div class="form-group">
                         <label>Quản lý kho</label>
                         <select name="idKho" id="idKho">
-                            <option value="">Không quản lý kho</option>
                             <?php
                             $sqlKho = "SELECT * FROM kho";
                             $resultKho = $conn->query($sqlKho);
